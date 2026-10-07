@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_controller.dart';
+import '../../core/theme/theme_x.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -91,9 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.privacy_tip_outlined,
                   title: 'Privacy & Security',
                   subtitle: 'Manage your privacy & security settings',
-                  onTap: () {
-                    _showComingSoon('Privacy & Security');
-                  },
+                  onTap: _showPrivacyDialog,
                 ),
               ],
             ),
@@ -119,8 +118,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   subtitle: 'Choose preferred language',
                   trailing: Text(
                     selectedLanguage,
-                    style: const TextStyle(
-                      color: AppColors.primary,
+                    style: TextStyle(
+                      color: context.accent,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -134,8 +133,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   subtitle: 'Choose your app theme',
                   trailing: Text(
                     isDark ? 'Dark' : 'Light',
-                    style: const TextStyle(
-                      color: AppColors.primary,
+                    style: TextStyle(
+                      color: context.accent,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -155,9 +154,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.help_outline,
                   title: 'Help & Support',
                   subtitle: 'Get help & contact support',
-                  onTap: () {
-                    _showComingSoon('Help & Support');
-                  },
+                  onTap: _showHelpDialog,
                 ),
                 _buildDivider(),
                 _buildSettingsTile(
@@ -194,59 +191,65 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // ============================================================
 
   Widget _buildProfileCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.light,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 54,
-            height: 54,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.dark,
-              border: Border.all(color: Colors.white, width: 2),
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () {
+        Navigator.pushNamed(context, AppRoutes.profile);
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: context.tintSurface,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.dark,
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+              child: const Icon(Icons.person, color: Colors.white, size: 28),
             ),
-            child: const Icon(Icons.person, color: Colors.white, size: 28),
-          ),
 
-          const SizedBox(width: 12),
+            const SizedBox(width: 12),
 
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _sessionProfile['name'] ?? 'Hilda Faith',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _sessionProfile['name'] ?? 'Hilda Faith',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                const Text(
-                  'Owner',
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(height: 2),
+                  Text(
+                    'Owner',
+                    style: TextStyle(
+                      color: context.accent,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  _sessionProfile['email'] ?? 'hilda@rxevents.com',
-                  style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
-                ),
-              ],
+                  const SizedBox(height: 2),
+                  Text(
+                    _sessionProfile['email'] ?? 'hilda@rxevents.com',
+                    style: TextStyle(fontSize: 10, color: context.textMuted),
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          const Icon(Icons.chevron_right, size: 20),
-        ],
+            const Icon(Icons.chevron_right, size: 20),
+          ],
+        ),
       ),
     );
   }
@@ -301,11 +304,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               width: 30,
               height: 30,
-              decoration: const BoxDecoration(
-                color: AppColors.light,
+              decoration: BoxDecoration(
+                color: context.tintSurface,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 17, color: AppColors.dark),
+              child: Icon(icon, size: 17, color: context.accentStrong),
             ),
 
             const SizedBox(width: 9),
@@ -509,7 +512,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: Text(title),
       trailing: Icon(
         selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-        color: selected ? AppColors.primary : Colors.grey,
+        color: selected ? context.accent : Colors.grey,
       ),
     );
   }
@@ -618,8 +621,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (newPasswordController.text !=
-                    confirmPasswordController.text) {
+                final current = currentPasswordController.text.trim();
+                final next = newPasswordController.text.trim();
+                final confirm = confirmPasswordController.text.trim();
+
+                if (current.isEmpty || next.isEmpty || confirm.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please fill in all three fields.'),
+                    ),
+                  );
+                  return;
+                }
+
+                if (next.length < 6) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'New password must be at least 6 characters.',
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
+                if (next != confirm) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Passwords do not match.')),
                   );
@@ -631,8 +657,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text(
-                      'Password is not saved. '
-                      'Sign-in is still being connected.',
+                      'Password validated for this demo session only. '
+                      'It is not stored anywhere yet.',
                     ),
                   ),
                 );
@@ -685,11 +711,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       applicationName: 'Rx Events',
       applicationVersion: '1.0.0',
-      applicationIcon: const Icon(
-        Icons.event,
-        color: AppColors.primary,
-        size: 40,
-      ),
+      applicationIcon: Icon(Icons.event, color: context.accent, size: 40),
       children: const [
         Text(
           'Rx Events is an event management application '
@@ -701,13 +723,165 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ============================================================
-  // COMING SOON
+  // PRIVACY & SECURITY (local demo preferences)
   // ============================================================
 
-  void _showComingSoon(String feature) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$feature will be available soon.')));
+  // Kept in memory for this session only. Nothing is stored remotely.
+  bool _twoFactorEnabled = false;
+  bool _hideEmailFromAttendees = true;
+  bool _bookingActivityAlerts = true;
+
+  void _showPrivacyDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return AlertDialog(
+              title: const Text('Privacy & Security'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text(
+                      'Two-factor sign-in',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    subtitle: const Text(
+                      'Ask for a code when signing in (demo)',
+                      style: TextStyle(fontSize: 10),
+                    ),
+                    value: _twoFactorEnabled,
+                    onChanged: (value) {
+                      setDialogState(() {
+                        _twoFactorEnabled = value;
+                      });
+                    },
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text(
+                      'Hide email from attendees',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    value: _hideEmailFromAttendees,
+                    onChanged: (value) {
+                      setDialogState(() {
+                        _hideEmailFromAttendees = value;
+                      });
+                    },
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text(
+                      'Booking activity alerts',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    value: _bookingActivityAlerts,
+                    onChanged: (value) {
+                      setDialogState(() {
+                        _bookingActivityAlerts = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+
+                    setState(() {});
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Privacy preferences updated for this session only.',
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // HELP & SUPPORT (local demo content)
+  // ============================================================
+
+  void _showHelpDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Help & Support'),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Quick help',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              SizedBox(height: 6),
+              Text(
+                '• Create an event from the + Create button in the '
+                'bottom bar.\n'
+                '• Open an event card to view, edit or share it.\n'
+                '• Use Reports to review revenue and top events.',
+                style: TextStyle(fontSize: 12, height: 1.5),
+              ),
+              SizedBox(height: 12),
+              Text(
+                'Contact',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              SizedBox(height: 6),
+              Text(
+                'support@rxevents.com\n+91 98765 43210\n'
+                'Monday to Saturday, 9:00 - 18:00',
+                style: TextStyle(fontSize: 12, height: 1.5),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Close'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Your message was recorded locally for this demo.',
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Write to us'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // ============================================================

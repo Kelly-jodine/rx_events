@@ -36,14 +36,8 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeIn,
     );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.75,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutBack,
-      ),
+    _scaleAnimation = Tween<double>(begin: 0.75, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
     );
 
     _animationController.forward();
@@ -52,19 +46,13 @@ class _SplashScreenState extends State<SplashScreen>
     // NAVIGATION TO ONBOARDING
     // ----------------------------------------------------------
 
-    _navigationTimer = Timer(
-      const Duration(seconds: 3),
-      _goToOnboarding,
-    );
+    _navigationTimer = Timer(const Duration(seconds: 3), _goToOnboarding);
   }
 
   void _goToOnboarding() {
     if (!mounted) return;
 
-    Navigator.pushReplacementNamed(
-      context,
-      AppRoutes.onboarding,
-    );
+    Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
   }
 
   @override
@@ -85,11 +73,7 @@ class _SplashScreenState extends State<SplashScreen>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF063F40),
-              Color(0xFF075E5F),
-              Color(0xFF043638),
-            ],
+            colors: [Color(0xFF063F40), Color(0xFF075E5F), Color(0xFF043638)],
           ),
         ),
 
@@ -98,47 +82,33 @@ class _SplashScreenState extends State<SplashScreen>
             // --------------------------------------------------
             // DECORATIVE BACKGROUND CIRCLES
             // --------------------------------------------------
-
             Positioned(
               top: -80,
               left: -70,
-              child: _buildBackgroundCircle(
-                size: 230,
-                opacity: 0.08,
-              ),
+              child: _buildBackgroundCircle(size: 230, opacity: 0.08),
             ),
 
             Positioned(
               top: 180,
               right: -80,
-              child: _buildBackgroundCircle(
-                size: 190,
-                opacity: 0.06,
-              ),
+              child: _buildBackgroundCircle(size: 190, opacity: 0.06),
             ),
 
             Positioned(
               bottom: 130,
               left: -100,
-              child: _buildBackgroundCircle(
-                size: 260,
-                opacity: 0.05,
-              ),
+              child: _buildBackgroundCircle(size: 260, opacity: 0.05),
             ),
 
             Positioned(
               bottom: -100,
               right: -80,
-              child: _buildBackgroundCircle(
-                size: 240,
-                opacity: 0.07,
-              ),
+              child: _buildBackgroundCircle(size: 240, opacity: 0.07),
             ),
 
             // --------------------------------------------------
             // MAIN CONTENT
             // --------------------------------------------------
-
             Center(
               child: FadeTransition(
                 opacity: _fadeAnimation,
@@ -150,7 +120,6 @@ class _SplashScreenState extends State<SplashScreen>
                       // ----------------------------------------
                       // RX LOGO
                       // ----------------------------------------
-
                       Container(
                         width: 105,
                         height: 105,
@@ -192,7 +161,6 @@ class _SplashScreenState extends State<SplashScreen>
                       // ----------------------------------------
                       // APP NAME
                       // ----------------------------------------
-
                       const Text(
                         'Rx Events',
                         style: TextStyle(
@@ -208,7 +176,6 @@ class _SplashScreenState extends State<SplashScreen>
                       // ----------------------------------------
                       // TAGLINE
                       // ----------------------------------------
-
                       const Text(
                         'Plan. Manage. Celebrate.',
                         style: TextStyle(
@@ -224,7 +191,6 @@ class _SplashScreenState extends State<SplashScreen>
                       // ----------------------------------------
                       // SMALL DECORATIVE LINE
                       // ----------------------------------------
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -256,7 +222,6 @@ class _SplashScreenState extends State<SplashScreen>
             // --------------------------------------------------
             // LOADING SECTION
             // --------------------------------------------------
-
             Positioned(
               left: 0,
               right: 0,
@@ -270,8 +235,7 @@ class _SplashScreenState extends State<SplashScreen>
                       height: 22,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor:
-                            const AlwaysStoppedAnimation<Color>(
+                        valueColor: const AlwaysStoppedAnimation<Color>(
                           Color(0xFF2DD4BF),
                         ),
                       ),
@@ -281,10 +245,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                     const Text(
                       'Creating unforgettable events',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 10,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 10),
                     ),
                   ],
                 ),
@@ -294,7 +255,6 @@ class _SplashScreenState extends State<SplashScreen>
             // --------------------------------------------------
             // VERSION
             // --------------------------------------------------
-
             const Positioned(
               bottom: 20,
               left: 0,
@@ -302,10 +262,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Center(
                 child: Text(
                   'Rx Events • 1.0.0',
-                  style: TextStyle(
-                    color: Colors.white38,
-                    fontSize: 9,
-                  ),
+                  style: TextStyle(color: Colors.white38, fontSize: 9),
                 ),
               ),
             ),
@@ -328,9 +285,7 @@ class _SplashScreenState extends State<SplashScreen>
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: const Color(0xFF2DD4BF).withValues(
-          alpha: opacity,
-        ),
+        color: const Color(0xFF2DD4BF).withValues(alpha: opacity),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -34,12 +35,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Select Period',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -48,10 +49,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     contentPadding: EdgeInsets.zero,
                     title: Text(period),
                     trailing: selectedPeriod == period
-                        ? const Icon(
-                            Icons.check_circle,
-                            color: AppColors.primary,
-                          )
+                        ? Icon(Icons.check_circle, color: context.accent)
                         : null,
                     onTap: () {
                       Navigator.pop(context, period);
@@ -125,25 +123,25 @@ class _ReportsScreenState extends State<ReportsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
       // APP BAR
       appBar: AppBar(
-        backgroundColor: AppColors.light,
-        foregroundColor: AppColors.text,
+        backgroundColor: context.appBarSurface,
+        foregroundColor: context.textPrimary,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Reports',
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.text),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: context.textPrimary,
+          ),
         ),
         actions: [
           IconButton(
             onPressed: _exportReport,
             tooltip: 'Export',
-            icon: const Icon(
-              Icons.file_download_outlined,
-              color: AppColors.primary,
-            ),
+            icon: Icon(Icons.file_download_outlined, color: context.accent),
           ),
         ],
       ),
@@ -159,7 +157,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.card,
                 borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
@@ -175,16 +173,16 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     width: 46,
                     height: 46,
                     decoration: BoxDecoration(
-                      color: AppColors.light,
+                      color: context.tintSurface,
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.analytics_outlined,
-                      color: AppColors.primary,
+                      color: context.accent,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -193,7 +191,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.text,
+                            color: context.textPrimary,
                           ),
                         ),
                         SizedBox(height: 3),
@@ -238,25 +236,25 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   vertical: 14,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.card,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade200),
+                  border: Border.all(color: context.outline),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.date_range_outlined,
-                      color: AppColors.primary,
+                      color: context.accent,
                       size: 20,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         dateRangeLabel,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.text,
+                          color: context.textPrimary,
                         ),
                       ),
                     ),
@@ -306,12 +304,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Work Performance',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 InkWell(
@@ -356,7 +354,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(12, 18, 12, 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.card,
                 borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
@@ -372,12 +370,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
             const SizedBox(height: 22),
 
             // TOP PERFORMING EVENTS
-            const Text(
+            Text(
               'Top Performing Events',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: context.textPrimary,
               ),
             ),
 
@@ -440,7 +438,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             Navigator.pushReplacementNamed(context, AppRoutes.profile);
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
@@ -452,7 +450,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             label: 'Events',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle, size: 38, color: AppColors.primary),
+            icon: Icon(Icons.add_circle, size: 38, color: context.accent),
             label: 'Create',
           ),
           BottomNavigationBarItem(
@@ -474,7 +472,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -490,39 +488,39 @@ class _ReportsScreenState extends State<ReportsScreen> {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: AppColors.light,
+              color: context.tintSurface,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AppColors.primary, size: 19),
+            child: Icon(icon, color: context.accent, size: 19),
           ),
           const SizedBox(height: 8),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 9, color: Colors.grey.shade700),
+            style: TextStyle(fontSize: 9, color: context.textMuted),
           ),
           const SizedBox(height: 3),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: AppColors.text,
+              color: context.textPrimary,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             growth,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 9,
-              color: AppColors.primary,
+              color: context.accent,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             'as per month',
-            style: TextStyle(fontSize: 8, color: Colors.grey.shade500),
+            style: TextStyle(fontSize: 8, color: context.textFaint),
           ),
         ],
       ),
@@ -588,7 +586,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               const SizedBox(width: 24),
               Expanded(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: const [
                     Text('Jan', style: TextStyle(fontSize: 9)),
                     Text('Feb', style: TextStyle(fontSize: 9)),
@@ -596,6 +594,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     Text('Apr', style: TextStyle(fontSize: 9)),
                     Text('May', style: TextStyle(fontSize: 9)),
                     Text('Jun', style: TextStyle(fontSize: 9)),
+                    Text('Jul', style: TextStyle(fontSize: 9)),
+                    Text('Aug', style: TextStyle(fontSize: 9)),
+                    Text('Sep', style: TextStyle(fontSize: 9)),
+                    Text('Oct', style: TextStyle(fontSize: 9)),
+                    Text('Nov', style: TextStyle(fontSize: 9)),
+                    Text('Dec', style: TextStyle(fontSize: 9)),
                   ],
                 ),
               ),
@@ -612,71 +616,77 @@ class _ReportsScreenState extends State<ReportsScreen> {
     required String date,
     required String revenue,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              imageUrl,
-              width: 58,
-              height: 58,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  width: 58,
-                  height: 58,
-                  color: AppColors.light,
-                  child: const Icon(Icons.event, color: AppColors.primary),
-                );
-              },
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () {
+        Navigator.pushNamed(context, AppRoutes.events);
+      },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: context.card,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+          ],
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                imageUrl,
+                width: 58,
+                height: 58,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 58,
+                    height: 58,
+                    color: context.tintSurface,
+                    child: Icon(Icons.event, color: context.accent),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: context.textPrimary,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  date,
-                  style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    date,
+                    style: TextStyle(fontSize: 10, color: context.textFaint),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            revenue,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: AppColors.text,
+            const SizedBox(width: 8),
+            Text(
+              revenue,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: context.textPrimary,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

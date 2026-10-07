@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class PaymentsScreen extends StatefulWidget {
   const PaymentsScreen({super.key});
@@ -136,7 +137,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   void _showFilterOptions() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: context.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -148,12 +149,12 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Filter Payments',
                   style: TextStyle(
                     fontSize: 21,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -176,7 +177,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
       contentPadding: EdgeInsets.zero,
       leading: Icon(
         isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-        color: AppColors.primary,
+        color: context.accent,
       ),
       title: Text(filter),
       onTap: () {
@@ -196,7 +197,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
       appBar: AppBar(
         title: const Text('Payments'),
@@ -216,12 +217,12 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Payment Overview',
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: context.textPrimary,
               ),
             ),
 
@@ -329,7 +330,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                 hintText: 'Search transaction, customer or event...',
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: context.card,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -359,12 +360,12 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
 
             Row(
               children: [
-                const Text(
+                Text(
                   'Transactions',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -374,13 +375,13 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.light,
+                    color: context.tintSurface,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     filteredPayments.length.toString(),
-                    style: const TextStyle(
-                      color: AppColors.dark,
+                    style: TextStyle(
+                      color: context.accentStrong,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
@@ -411,7 +412,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -420,10 +421,10 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
           const SizedBox(height: 5),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 19,
               fontWeight: FontWeight.bold,
-              color: AppColors.text,
+              color: context.textPrimary,
             ),
           ),
           const SizedBox(height: 2),
@@ -444,15 +445,15 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
           selectedFilter = filter;
         });
       },
-      selectedColor: AppColors.primary,
-      backgroundColor: Colors.white,
+      selectedColor: context.accent,
+      backgroundColor: context.card,
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : AppColors.text,
+        color: isSelected ? Colors.white : context.textPrimary,
         fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
       side: BorderSide(
-        color: isSelected ? AppColors.primary : Colors.grey.shade300,
+        color: isSelected ? AppColors.primary : context.outlineStrong,
       ),
     );
   }
@@ -470,9 +471,9 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.card,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.grey.shade100),
+          border: Border.all(color: context.cardAlt),
         ),
         child: Column(
           children: [
@@ -482,12 +483,12 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.light,
+                    color: context.tintSurface,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.receipt_long_outlined,
-                    color: AppColors.primary,
+                    color: context.accent,
                   ),
                 ),
 
@@ -499,10 +500,10 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                     children: [
                       Text(
                         payment['id']!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.text,
+                          color: context.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -529,16 +530,12 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
 
             Row(
               children: [
-                const Icon(
-                  Icons.event_outlined,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
+                Icon(Icons.event_outlined, size: 16, color: context.accent),
                 const SizedBox(width: 7),
                 Expanded(
                   child: Text(
                     payment['event']!,
-                    style: const TextStyle(fontSize: 12, color: AppColors.text),
+                    style: TextStyle(fontSize: 12, color: context.textPrimary),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -564,10 +561,10 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
 
                 Text(
                   payment['amount']!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.dark,
+                    color: context.accentStrong,
                   ),
                 ),
               ],
@@ -590,10 +587,10 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
 
                 const Spacer(),
 
-                const Text(
+                Text(
                   'View Details →',
                   style: TextStyle(
-                    color: AppColors.primary,
+                    color: context.accent,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -613,20 +610,20 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
 
     switch (status) {
       case 'Paid':
-        backgroundColor = AppColors.light;
-        textColor = AppColors.dark;
+        backgroundColor = context.tintSurface;
+        textColor = context.accentStrong;
         icon = Icons.check_circle_outline;
         break;
 
       case 'Pending':
-        backgroundColor = Colors.orange.shade50;
-        textColor = Colors.orange.shade800;
+        backgroundColor = context.warningSurface;
+        textColor = context.warningText;
         icon = Icons.access_time;
         break;
 
       default:
-        backgroundColor = Colors.red.shade50;
-        textColor = Colors.red.shade700;
+        backgroundColor = context.dangerSurface;
+        textColor = context.dangerText;
         icon = Icons.replay;
     }
 
@@ -659,10 +656,10 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Column(
+      child: Column(
         children: [
           Icon(Icons.receipt_long_outlined, size: 55, color: Colors.grey),
           SizedBox(height: 12),
@@ -671,7 +668,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppColors.text,
+              color: context.textPrimary,
             ),
           ),
           SizedBox(height: 5),

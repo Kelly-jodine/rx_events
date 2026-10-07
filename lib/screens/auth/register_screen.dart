@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -22,17 +22,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool obscureRePassword = true;
 
   bool isValidPassword(String password) {
-    final capitalLetters =
-        RegExp(r'[A-Z]').allMatches(password).length;
+    final capitalLetters = RegExp(r'[A-Z]').allMatches(password).length;
 
-    final smallLetters =
-        RegExp(r'[a-z]').allMatches(password).length;
+    final smallLetters = RegExp(r'[a-z]').allMatches(password).length;
 
-    final numbers =
-        RegExp(r'[0-9]').allMatches(password).length;
+    final numbers = RegExp(r'[0-9]').allMatches(password).length;
 
-    final specialCharacters =
-        RegExp(r'[^A-Za-z0-9]').allMatches(password).length;
+    final specialCharacters = RegExp(
+      r'[^A-Za-z0-9]',
+    ).allMatches(password).length;
 
     return password.length >= 10 &&
         capitalLetters >= 3 &&
@@ -52,21 +50,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _register() {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.login,
-      );
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
+      appBar: AppBar(title: const Text('Register')),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -76,21 +69,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
           child: Column(
             children: [
-              const Icon(
-                Icons.person_add_outlined,
-                size: 80,
-                color: AppColors.primary,
-              ),
+              Icon(Icons.person_add_outlined, size: 80, color: context.accent),
 
               const SizedBox(height: 20),
 
-              const Text(
+              Text(
                 'Create Your Account',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.text,
+                  color: context.textPrimary,
                 ),
               ),
 
@@ -109,9 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Username',
                   hintText: 'Enter your username',
-                  prefixIcon: Icon(
-                    Icons.person_outline,
-                  ),
+                  prefixIcon: Icon(Icons.person_outline),
                 ),
                 validator: (text) {
                   if (text == null || text.isEmpty) {
@@ -131,17 +118,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Email',
                   hintText: 'Enter your email',
-                  prefixIcon: Icon(
-                    Icons.email_outlined,
-                  ),
+                  prefixIcon: Icon(Icons.email_outlined),
                 ),
                 validator: (text) {
                   if (text == null || text.isEmpty) {
                     return 'Please enter your email';
                   }
 
-                  final emailRegex =
-                      RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+                  final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
 
                   if (!emailRegex.hasMatch(text)) {
                     return 'Please enter a valid email';
@@ -160,19 +144,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   hintText: 'Enter your password',
-                  prefixIcon: const Icon(
-                    Icons.lock_outline,
-                  ),
+                  prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      obscurePassword ? Icons.visibility_off : Icons.visibility,
                     ),
                     onPressed: () {
                       setState(() {
-                        obscurePassword =
-                            !obscurePassword;
+                        obscurePassword = !obscurePassword;
                       });
                     },
                   ),
@@ -201,9 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                   labelText: 'Confirm Password',
                   hintText: 'Re-enter your password',
-                  prefixIcon: const Icon(
-                    Icons.lock_outline,
-                  ),
+                  prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     icon: Icon(
                       obscureRePassword
@@ -212,8 +189,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        obscureRePassword =
-                            !obscureRePassword;
+                        obscureRePassword = !obscureRePassword;
                       });
                     },
                   ),
@@ -248,9 +224,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Already have an account? ',
-                  ),
+                  const Text('Already have an account? '),
 
                   TextButton(
                     onPressed: () {

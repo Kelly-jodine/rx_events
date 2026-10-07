@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,21 +27,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _login() {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.dashboard,
-      );
+      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
+      appBar: AppBar(title: const Text('Login')),
 
       body: Center(
         child: SingleChildScrollView(
@@ -53,20 +48,16 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.event_available,
-                  size: 80,
-                  color: AppColors.primary,
-                ),
+                Icon(Icons.event_available, size: 80, color: context.accent),
 
                 const SizedBox(height: 20),
 
-                const Text(
+                Text(
                   'Welcome Back!',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
 
@@ -93,8 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return 'Please enter your email';
                     }
 
-                    final emailRegex =
-                        RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+                    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
 
                     if (!emailRegex.hasMatch(text)) {
                       return 'Please enter a valid email';
@@ -113,9 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: 'Password',
                     hintText: 'Enter your password',
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                    ),
+                    prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
                         obscurePassword
@@ -147,9 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       // Forgot Password will be added later.
                     },
-                    child: const Text(
-                      'Forgot Password?',
-                    ),
+                    child: const Text('Forgot Password?'),
                   ),
                 ),
 
@@ -170,16 +156,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Don't have an account? ",
-                    ),
+                    const Text("Don't have an account? "),
 
                     TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.register,
-                        );
+                        Navigator.pushNamed(context, AppRoutes.register);
                       },
                       child: const Text('Register'),
                     ),

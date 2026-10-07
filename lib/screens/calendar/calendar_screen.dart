@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -85,7 +86,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -128,7 +129,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -157,20 +158,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
         IconButton(
           onPressed: _previousMonth,
           icon: const Icon(Icons.chevron_left),
-          color: AppColors.primary,
+          color: context.accent,
         ),
         Text(
           _monthName(displayedMonth),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.text,
+            color: context.textPrimary,
           ),
         ),
         IconButton(
           onPressed: _nextMonth,
           icon: const Icon(Icons.chevron_right),
-          color: AppColors.primary,
+          color: context.accent,
         ),
       ],
     );
@@ -189,7 +190,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade600,
+                  color: context.textFaint,
                 ),
               ),
             );
@@ -273,7 +274,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               color: isSelected
                   ? AppColors.primary
                   : isToday
-                  ? AppColors.light
+                  ? context.tintSurface
                   : Colors.transparent,
               shape: BoxShape.circle,
               border: isToday && !isSelected
@@ -290,7 +291,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     fontWeight: isSelected || isToday
                         ? FontWeight.bold
                         : FontWeight.w500,
-                    color: isSelected ? Colors.white : AppColors.text,
+                    color: isSelected ? Colors.white : context.textPrimary,
                   ),
                 ),
                 if (hasEvents)
@@ -300,7 +301,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       width: 4,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.white : AppColors.primary,
+                        color: isSelected ? context.card : AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -331,20 +332,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
             const SizedBox(height: 3),
             Text(
               _fullDate(selectedDate),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: context.textPrimary,
               ),
             ),
           ],
         ),
         Text(
           '${_eventsForDate(selectedDate).length} event${_eventsForDate(selectedDate).length == 1 ? '' : 's'}',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: AppColors.primary,
+            color: context.accent,
           ),
         ),
       ],
@@ -377,9 +378,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.card,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: context.outline),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -406,10 +407,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 children: [
                   Text(
                     event['title'] as String,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.text,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 7),
@@ -418,7 +419,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       Icon(
                         Icons.access_time_outlined,
                         size: 15,
-                        color: Colors.grey.shade600,
+                        color: context.textFaint,
                       ),
                       const SizedBox(width: 5),
                       Expanded(
@@ -426,7 +427,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           event['time'] as String,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey.shade600,
+                            color: context.textFaint,
                           ),
                         ),
                       ),
@@ -438,7 +439,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       Icon(
                         Icons.location_on_outlined,
                         size: 15,
-                        color: Colors.grey.shade600,
+                        color: context.textFaint,
                       ),
                       const SizedBox(width: 5),
                       Expanded(
@@ -446,7 +447,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           event['location'] as String,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey.shade600,
+                            color: context.textFaint,
                           ),
                         ),
                       ),
@@ -468,30 +469,30 @@ class _CalendarScreenState extends State<CalendarScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.outline),
       ),
       child: Column(
         children: [
           Icon(
             Icons.event_available_outlined,
             size: 45,
-            color: Colors.grey.shade400,
+            color: context.textFaint,
           ),
           const SizedBox(height: 10),
-          const Text(
+          Text(
             'No events scheduled',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
-              color: AppColors.text,
+              color: context.textPrimary,
             ),
           ),
           const SizedBox(height: 5),
           Text(
             'There are no events on this date.',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            style: TextStyle(fontSize: 12, color: context.textFaint),
           ),
         ],
       ),
@@ -560,8 +561,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         BottomNavigationBarItem(
           icon: Icon(Icons.dashboard_outlined),
           activeIcon: Icon(Icons.dashboard),
-label: 'Dashboard',
-      ),
+          label: 'Dashboard',
+        ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_month_outlined),
           activeIcon: Icon(Icons.calendar_month),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class AttendeesScreen extends StatefulWidget {
   const AttendeesScreen({super.key});
@@ -126,7 +127,7 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
   void _showEventSelector() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: context.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -138,12 +139,12 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Select Event',
                   style: TextStyle(
                     fontSize: 21,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -154,7 +155,7 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
                       selectedEvent == event
                           ? Icons.radio_button_checked
                           : Icons.radio_button_unchecked,
-                      color: AppColors.primary,
+                      color: context.accent,
                     ),
                     title: Text(event),
                     onTap: () {
@@ -177,7 +178,7 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
   void _showFilterOptions() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: context.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -189,12 +190,12 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Filter Attendees',
                   style: TextStyle(
                     fontSize: 21,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -216,7 +217,7 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
       contentPadding: EdgeInsets.zero,
       leading: Icon(
         isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-        color: AppColors.primary,
+        color: context.accent,
       ),
       title: Text(filter),
       onTap: () {
@@ -238,17 +239,136 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
   }
 
   void _addAttendee() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Add Attendee will be connected to the database later.'),
-      ),
-    );
+    final nameController = TextEditingController();
+    final emailController = TextEditingController();
+    final phoneController = TextEditingController();
+    String event = selectedEvent;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return AlertDialog(
+              title: const Text('Add Attendee'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(labelText: 'Full name'),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(labelText: 'Email'),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(labelText: 'Phone'),
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      initialValue: event,
+                      decoration: const InputDecoration(labelText: 'Event'),
+                      items: events
+                          .map(
+                            (name) => DropdownMenuItem(
+                              value: name,
+                              child: Text(
+                                name,
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        if (value == null) {
+                          return;
+                        }
+
+                        setDialogState(() {
+                          event = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final name = nameController.text.trim();
+                    final email = emailController.text.trim();
+                    final phone = phoneController.text.trim();
+
+                    if (name.isEmpty || email.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Name and email are required.'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    final position = attendees.length;
+
+                    Navigator.pop(dialogContext);
+
+                    setState(() {
+                      attendees.insert(0, {
+                        'name': name,
+                        'enrollment': 'DEMO${(1000 + position).toString()}',
+                        'email': email,
+                        'phone': phone.isEmpty ? 'Not provided' : phone,
+                        'event': event,
+                        'seats': '1',
+                        'status': 'Not checked-in',
+                        'booking': 'BK - ${1200 + position}',
+                        'payment': 'Pending',
+                      });
+
+                      selectedEvent = event;
+                      selectedFilter = 'All';
+                    });
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          '$name added locally for this session only.',
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Add'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).whenComplete(() {
+      nameController.dispose();
+      emailController.dispose();
+      phoneController.dispose();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
       appBar: AppBar(
         title: const Text('Attendees'),
@@ -355,12 +475,12 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
             const SizedBox(height: 18),
 
             // ATTENDANCE SUMMARY
-            const Text(
+            Text(
               'Attendance Summary',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: context.textPrimary,
               ),
             ),
 
@@ -457,7 +577,7 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
                 hintText: 'Search name, email or enrollment...',
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: context.card,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -486,12 +606,12 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
             // LIST HEADER
             Row(
               children: [
-                const Text(
+                Text(
                   'Attendees',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -501,13 +621,13 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.light,
+                    color: context.tintSurface,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     filteredAttendees.length.toString(),
-                    style: const TextStyle(
-                      color: AppColors.dark,
+                    style: TextStyle(
+                      color: context.accentStrong,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
@@ -536,19 +656,19 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
         children: [
-          Icon(icon, color: AppColors.primary, size: 22),
+          Icon(icon, color: context.accent, size: 22),
           const SizedBox(height: 5),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.text,
+              color: context.textPrimary,
             ),
           ),
           const SizedBox(height: 2),
@@ -573,15 +693,15 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
           selectedFilter = filter;
         });
       },
-      selectedColor: AppColors.primary,
-      backgroundColor: Colors.white,
+      selectedColor: context.accent,
+      backgroundColor: context.card,
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : AppColors.text,
+        color: isSelected ? Colors.white : context.textPrimary,
         fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
       side: BorderSide(
-        color: isSelected ? AppColors.primary : Colors.grey.shade300,
+        color: isSelected ? AppColors.primary : context.outlineStrong,
       ),
     );
   }
@@ -599,9 +719,9 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.card,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.grey.shade100),
+          border: Border.all(color: context.cardAlt),
         ),
         child: Column(
           children: [
@@ -612,14 +732,14 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.light,
+                    color: context.tintSurface,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
                     child: Text(
                       attendee['name']!.substring(0, 1).toUpperCase(),
-                      style: const TextStyle(
-                        color: AppColors.dark,
+                      style: TextStyle(
+                        color: context.accentStrong,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -636,10 +756,10 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
                     children: [
                       Text(
                         attendee['name']!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.text,
+                          color: context.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -667,11 +787,7 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
 
             Row(
               children: [
-                const Icon(
-                  Icons.email_outlined,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
+                Icon(Icons.email_outlined, size: 16, color: context.accent),
                 const SizedBox(width: 7),
                 Expanded(
                   child: Text(
@@ -681,11 +797,7 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
                   ),
                 ),
 
-                const Icon(
-                  Icons.people_outline,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
+                Icon(Icons.people_outline, size: 16, color: context.accent),
                 const SizedBox(width: 5),
                 Text(
                   '${attendee['seats']} seats',
@@ -698,27 +810,27 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
 
             Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.confirmation_number_outlined,
                   size: 16,
-                  color: AppColors.primary,
+                  color: context.accent,
                 ),
                 const SizedBox(width: 7),
                 Text(
                   attendee['booking']!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
 
                 const Spacer(),
 
-                const Text(
+                Text(
                   'View Details →',
                   style: TextStyle(
-                    color: AppColors.primary,
+                    color: context.accent,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -735,7 +847,7 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: isCheckedIn ? AppColors.light : Colors.orange.shade50,
+        color: isCheckedIn ? context.tintSurface : context.warningSurface,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -744,13 +856,13 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
           Icon(
             isCheckedIn ? Icons.check_circle_outline : Icons.access_time,
             size: 13,
-            color: isCheckedIn ? AppColors.dark : Colors.orange.shade800,
+            color: isCheckedIn ? context.accentStrong : context.warningText,
           ),
           const SizedBox(width: 4),
           Text(
             status,
             style: TextStyle(
-              color: isCheckedIn ? AppColors.dark : Colors.orange.shade800,
+              color: isCheckedIn ? context.accentStrong : context.warningText,
               fontSize: 9,
               fontWeight: FontWeight.bold,
             ),
@@ -765,10 +877,10 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Column(
+      child: Column(
         children: [
           Icon(Icons.person_search_outlined, size: 55, color: Colors.grey),
           SizedBox(height: 12),
@@ -777,7 +889,7 @@ class _AttendeesScreenState extends State<AttendeesScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppColors.text,
+              color: context.textPrimary,
             ),
           ),
           SizedBox(height: 5),

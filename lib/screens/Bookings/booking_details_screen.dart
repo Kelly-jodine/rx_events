@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
   const BookingDetailsScreen({super.key});
@@ -43,7 +44,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         : bookingStatus;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
       appBar: AppBar(
         title: const Text('Booking Details'),
@@ -154,14 +155,14 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 'Payment Status',
                 payment,
                 valueColor: payment == 'Paid'
-                    ? AppColors.primary
-                    : Colors.orange.shade800,
+                    ? context.accent
+                    : context.warningText,
               ),
               _buildInfoRow(
                 Icons.receipt_long_outlined,
                 'Booking Status',
                 status,
-                valueColor: cancelled ? Colors.red.shade700 : AppColors.primary,
+                valueColor: cancelled ? context.dangerText : context.accent,
               ),
               _buildInfoRow(
                 Icons.info_outline,
@@ -200,7 +201,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 icon: const Icon(Icons.close),
                 label: Text(cancelled ? 'Booking Cancelled' : 'Cancel Booking'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.red.shade700,
+                  foregroundColor: context.dangerText,
                   side: BorderSide(color: Colors.red.shade300),
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
@@ -214,10 +215,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
             // SMALL NOTE
             if (checkedIn)
-              const Center(
+              Center(
                 child: Text(
                   'Customer has been checked in successfully.',
-                  style: TextStyle(color: AppColors.primary, fontSize: 12),
+                  style: TextStyle(color: context.accent, fontSize: 12),
                 ),
               ),
 
@@ -225,7 +226,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               Center(
                 child: Text(
                   'This booking has been cancelled.',
-                  style: TextStyle(color: Colors.red.shade700, fontSize: 12),
+                  style: TextStyle(color: context.dangerText, fontSize: 12),
                 ),
               ),
           ],
@@ -277,10 +278,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: AppColors.text,
+        color: context.textPrimary,
       ),
     );
   }
@@ -291,7 +292,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(children: children),
@@ -309,7 +310,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       padding: const EdgeInsets.symmetric(vertical: 11),
       child: Row(
         children: [
-          Icon(icon, size: 19, color: AppColors.primary),
+          Icon(icon, size: 19, color: context.accent),
 
           const SizedBox(width: 10),
 
@@ -326,7 +327,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               value,
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: valueColor ?? AppColors.text,
+                color: valueColor ?? context.textPrimary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),

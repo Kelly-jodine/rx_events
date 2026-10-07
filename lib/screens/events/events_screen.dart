@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
@@ -49,9 +50,7 @@ class _EventsScreenState extends State<EventsScreen> {
       return events;
     }
 
-    return events
-        .where((event) => event['status'] == selectedFilter)
-        .toList();
+    return events.where((event) => event['status'] == selectedFilter).toList();
   }
 
   void _showFilterOptions() {
@@ -65,12 +64,12 @@ class _EventsScreenState extends State<EventsScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Filter Events',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -93,7 +92,7 @@ class _EventsScreenState extends State<EventsScreen> {
         selectedFilter == filter
             ? Icons.radio_button_checked
             : Icons.radio_button_unchecked,
-        color: AppColors.primary,
+        color: context.accent,
       ),
       title: Text(filter),
       onTap: () {
@@ -109,7 +108,7 @@ class _EventsScreenState extends State<EventsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
       appBar: AppBar(
         title: const Text('Events'),
         backgroundColor: AppColors.primary,
@@ -120,12 +119,12 @@ class _EventsScreenState extends State<EventsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'My Events',
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: context.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -135,7 +134,7 @@ class _EventsScreenState extends State<EventsScreen> {
                 hintText: 'Search events...',
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: context.card,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -152,18 +151,12 @@ class _EventsScreenState extends State<EventsScreen> {
                     onPressed: _showFilterOptions,
                     icon: const Icon(Icons.filter_list),
                     label: Text(
-                      selectedFilter == 'All'
-                          ? 'Filter'
-                          : selectedFilter,
+                      selectedFilter == 'All' ? 'Filter' : selectedFilter,
                     ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: const BorderSide(
-                        color: AppColors.primary,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 13,
-                      ),
+                      foregroundColor: context.accent,
+                      side: const BorderSide(color: AppColors.primary),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
                     ),
                   ),
                 ),
@@ -171,14 +164,12 @@ class _EventsScreenState extends State<EventsScreen> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      final createdEvent =
-                          await Navigator.pushNamed<Object?>(
+                      final createdEvent = await Navigator.pushNamed<Object?>(
                         context,
                         AppRoutes.createEvent,
                       );
 
-                      if (!mounted ||
-                          createdEvent is! Map<String, String>) {
+                      if (!mounted || createdEvent is! Map<String, String>) {
                         return;
                       }
 
@@ -191,9 +182,7 @@ class _EventsScreenState extends State<EventsScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 13,
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
                     ),
                   ),
                 ),
@@ -207,10 +196,7 @@ class _EventsScreenState extends State<EventsScreen> {
                   ? const Center(
                       child: Text(
                         'No events found.',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                     )
                   : ListView.separated(
@@ -220,9 +206,7 @@ class _EventsScreenState extends State<EventsScreen> {
                       itemBuilder: (context, index) {
                         final event = filteredEvents[index];
 
-                        return _buildEventCard(
-                          event: event,
-                        );
+                        return _buildEventCard(event: event);
                       },
                     ),
             ),
@@ -232,9 +216,7 @@ class _EventsScreenState extends State<EventsScreen> {
     );
   }
 
-  Widget _buildEventCard({
-    required Map<String, String> event,
-  }) {
+  Widget _buildEventCard({required Map<String, String> event}) {
     final title = event['title'] ?? '';
     final date = event['date'] ?? '';
     final location = event['location'] ?? '';
@@ -245,160 +227,178 @@ class _EventsScreenState extends State<EventsScreen> {
       elevation: 2,
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: SizedBox(
-        height: 145,
-        child: Row(
-          children: [
-            SizedBox(
-              width: 125,
-              height: double.infinity,
-              child: Image.asset(
-                image,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: AppColors.light,
-                    child: const Center(
-                      child: Icon(
-                        Icons.image_not_supported_outlined,
-                        size: 40,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.text,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 7,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: status == 'Draft'
-                                ? Colors.orange.shade50
-                                : AppColors.light,
-                            borderRadius:
-                                BorderRadius.circular(15),
-                          ),
-                          child: Text(
-                            status,
-                            style: TextStyle(
-                              color: status == 'Draft'
-                                  ? Colors.orange.shade800
-                                  : AppColors.dark,
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.calendar_today_outlined,
-                          size: 15,
-                          color: AppColors.primary,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            date,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style:
-                                const TextStyle(fontSize: 12),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 5),
-
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on_outlined,
-                          size: 15,
-                          color: AppColors.primary,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            location,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style:
-                                const TextStyle(fontSize: 12),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Spacer(),
-
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.eventDetails,
-                            arguments: event,
-                          );
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      child: InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            AppRoutes.eventDetails,
+            arguments: event,
+          );
+        },
+        child: SizedBox(
+          height: 145,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 125,
+                height: double.infinity,
+                child: image.isEmpty
+                    ? _buildImageFallback()
+                    : Image.asset(
+                        image,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return _buildImageFallback();
                         },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Text(
-                          'View Details →',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                      ),
+              ),
+
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: context.textPrimary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: status == 'Draft'
+                                  ? context.warningSurface
+                                  : context.tintSurface,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Text(
+                              status,
+                              style: TextStyle(
+                                color: status == 'Draft'
+                                    ? context.warningText
+                                    : context.accentStrong,
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            size: 15,
+                            color: context.accent,
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              date,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 5),
+
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 15,
+                            color: context.accent,
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              location,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const Spacer(),
+
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.eventDetails,
+                              arguments: event,
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text(
+                            'View Details →',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildImageFallback() {
+    return Container(
+      color: context.tintSurface,
+      width: double.infinity,
+      height: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.event, size: 34, color: context.accent),
+          SizedBox(height: 6),
+          Text(
+            'Rx Events',
+            style: TextStyle(
+              color: context.accent,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

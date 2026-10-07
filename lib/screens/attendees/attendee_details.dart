@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class AttendeeDetailsScreen extends StatefulWidget {
   const AttendeeDetailsScreen({super.key});
@@ -46,7 +47,7 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
     final initial = name.substring(0, 1).toUpperCase();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
       appBar: AppBar(
         title: const Text('Attendee Details'),
@@ -72,15 +73,15 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
                     width: 78,
                     height: 78,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: context.card,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.light, width: 4),
+                      border: Border.all(color: context.tintSurface, width: 4),
                     ),
                     child: Center(
                       child: Text(
                         initial,
-                        style: const TextStyle(
-                          color: AppColors.primary,
+                        style: TextStyle(
+                          color: context.accent,
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
                         ),
@@ -157,16 +158,16 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
                 'Payment',
                 payment,
                 valueColor: payment == 'Paid'
-                    ? AppColors.primary
-                    : Colors.orange.shade800,
+                    ? context.accent
+                    : context.warningText,
               ),
               _buildInfoRow(
                 Icons.verified_outlined,
                 'Attendance',
                 status,
                 valueColor: status == 'Checked-in'
-                    ? AppColors.primary
-                    : Colors.orange.shade800,
+                    ? context.accent
+                    : context.warningText,
               ),
             ]),
 
@@ -220,10 +221,10 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
       alignment: Alignment.centerLeft,
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: AppColors.text,
+          color: context.textPrimary,
         ),
       ),
     );
@@ -234,7 +235,7 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(children: children),
@@ -251,7 +252,7 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
       padding: const EdgeInsets.symmetric(vertical: 11),
       child: Row(
         children: [
-          Icon(icon, size: 19, color: AppColors.primary),
+          Icon(icon, size: 19, color: context.accent),
 
           const SizedBox(width: 10),
 
@@ -268,7 +269,7 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
               value,
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: valueColor ?? AppColors.text,
+                color: valueColor ?? context.textPrimary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),

@@ -64,10 +64,12 @@ class RxEventsApp extends StatelessWidget {
             AppRoutes.bookings: (context) => const BookingsScreen(),
             AppRoutes.bookingDetails: (context) => const BookingDetailsScreen(),
             AppRoutes.attendees: (context) => const AttendeesScreen(),
-            AppRoutes.attendeeDetails: (context) => const AttendeeDetailsScreen(),
+            AppRoutes.attendeeDetails: (context) =>
+                const AttendeeDetailsScreen(),
             AppRoutes.calendar: (context) => const CalendarScreen(),
             AppRoutes.employees: (context) => const EmployeesScreen(),
-            AppRoutes.employeeDetails: (context) => const EmployeeDetailsScreen(),
+            AppRoutes.employeeDetails: (context) =>
+                const EmployeeDetailsScreen(),
             AppRoutes.payments: (context) => const PaymentsScreen(),
             AppRoutes.paymentDetails: (context) => const PaymentDetailsScreen(),
             AppRoutes.reports: (context) => const ReportsScreen(),

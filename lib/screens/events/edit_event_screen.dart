@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
-// Keeps a failed network image from surfacing Flutter's default
-// error tile.
-void _ignoreImageError(Object exception, StackTrace? stackTrace) {}
+// Used only when the event being edited has no image of its own.
+const String _fallbackEventImageUrl =
+    'https://images.unsplash.com/photo-1540575467063-178a50c2df87'
+    '?auto=format&fit=crop&w=1000&q=80';
 
 class EditEventScreen extends StatefulWidget {
   const EditEventScreen({super.key});
@@ -128,6 +131,94 @@ class _EditEventScreenState extends State<EditEventScreen> {
     return '$hour:$minute $period';
   }
 
+  // Image passed in by Event Details, so the editor shows the same
+  // picture the details screen is showing.
+  String get _routeImage {
+    final arguments = ModalRoute.of(context)?.settings.arguments;
+
+    if (arguments is! Map) {
+      return '';
+    }
+
+    final image =
+        (arguments['image'] ?? arguments['imageUrl'])?.toString().trim() ?? '';
+
+    return image;
+  }
+
+  Widget _buildEventImage() {
+    final image = _routeImage;
+
+    if (image.startsWith('assets/')) {
+      return Image.asset(
+        image,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildImagePlaceholder();
+        },
+      );
+    }
+
+    if (image.startsWith('http')) {
+      return Image.network(
+        image,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildImagePlaceholder();
+        },
+      );
+    }
+
+    if (image.isNotEmpty) {
+      return _buildImagePlaceholder();
+    }
+
+    return Image.network(
+      _fallbackEventImageUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return _buildImagePlaceholder();
+      },
+    );
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: context.tintSurface,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.event, size: 44, color: context.accent),
+          SizedBox(height: 8),
+          Text(
+            'Rx Events',
+            style: TextStyle(
+              color: context.accent,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _pickImage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Image picker will be connected later.')),
+    );
+  }
+
+  void _removeImage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Removing the image will be connected later.'),
+      ),
+    );
+  }
+
   void _saveChanges() {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -160,7 +251,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.light,
+      backgroundColor: context.tintSurface,
 
       appBar: AppBar(
         backgroundColor: AppColors.primary,
@@ -168,8 +259,11 @@ class _EditEventScreenState extends State<EditEventScreen> {
         title: const Text('Edit Event'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.notifications);
+            },
             icon: const Icon(Icons.notifications_none),
+            tooltip: 'Notifications',
           ),
         ],
       ),
@@ -187,24 +281,20 @@ class _EditEventScreenState extends State<EditEventScreen> {
               Container(
                 width: double.infinity,
                 height: 190,
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
-                  image: const DecorationImage(
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1540575467063-178a50c2df87'
-                      '?auto=format&fit=crop&w=1000&q=80',
-                    ),
-                    fit: BoxFit.cover,
-                    onError: _ignoreImageError,
-                  ),
+                  color: context.tintSurface,
                 ),
                 child: Stack(
                   children: [
+                    Positioned.fill(child: _buildEventImage()),
+
                     Positioned(
                       top: 12,
                       right: 12,
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: _pickImage,
                         icon: const Icon(Icons.camera_alt_outlined, size: 18),
                         label: const Text('Change Image'),
                         style: ElevatedButton.styleFrom(
@@ -218,16 +308,17 @@ class _EditEventScreenState extends State<EditEventScreen> {
                       bottom: 12,
                       right: 12,
                       child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
+                        decoration: BoxDecoration(
+                          color: context.card,
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: _removeImage,
                           icon: const Icon(
                             Icons.delete_outline,
                             color: Colors.red,
                           ),
+                          tooltip: 'Remove image',
                         ),
                       ),
                     ),
@@ -274,7 +365,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
                   ),
                   child: Text(
                     _formatDate(selectedDate),
-                    style: const TextStyle(fontSize: 15, color: AppColors.text),
+                    style: TextStyle(fontSize: 15, color: context.textPrimary),
                   ),
                 ),
               ),
@@ -300,9 +391,9 @@ class _EditEventScreenState extends State<EditEventScreen> {
                             ),
                             child: Text(
                               _formatTime(startTime),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.text,
+                                color: context.textPrimary,
                               ),
                             ),
                           ),
@@ -329,9 +420,9 @@ class _EditEventScreenState extends State<EditEventScreen> {
                             ),
                             child: Text(
                               _formatTime(endTime),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.text,
+                                color: context.textPrimary,
                               ),
                             ),
                           ),
@@ -424,28 +515,25 @@ class _EditEventScreenState extends State<EditEventScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.card,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.light),
+                  border: Border.all(color: context.tintSurface),
                 ),
                 child: Row(
                   children: [
                     Container(
                       width: 48,
                       height: 48,
-                      decoration: const BoxDecoration(
-                        color: AppColors.light,
+                      decoration: BoxDecoration(
+                        color: context.tintSurface,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.event_available,
-                        color: AppColors.primary,
-                      ),
+                      child: Icon(Icons.event_available, color: context.accent),
                     ),
 
                     const SizedBox(width: 12),
 
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -454,7 +542,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.text,
+                              color: context.textPrimary,
                             ),
                           ),
                           SizedBox(height: 4),
@@ -493,7 +581,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
                         Navigator.pop(context);
                       },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
+                        foregroundColor: context.accent,
                         side: const BorderSide(color: AppColors.primary),
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
@@ -529,10 +617,10 @@ class _EditEventScreenState extends State<EditEventScreen> {
     return RichText(
       text: TextSpan(
         text: text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: AppColors.text,
+          color: context.textPrimary,
         ),
         children: [
           if (required)
@@ -551,16 +639,16 @@ class _EditEventScreenState extends State<EditEventScreen> {
   }) {
     return InputDecoration(
       hintText: hintText,
-      prefixIcon: Icon(icon, color: AppColors.primary),
+      prefixIcon: Icon(icon, color: context.accent),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: context.card,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade200),
+        borderSide: BorderSide(color: context.outline),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_controller.dart';
+import '../../core/theme/theme_x.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -98,7 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: 'Account & Security',
               subtitle: 'Manage your account security',
               onTap: () {
-                _showComingSoon('Account & Security');
+                Navigator.pushNamed(context, AppRoutes.settings);
               },
             ),
 
@@ -106,18 +107,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.download_outlined,
               title: 'Download My Data',
               subtitle: 'Get a copy of your account data',
-              onTap: () {
-                _showComingSoon('Download My Data');
-              },
+              onTap: _showDownloadDataDialog,
             ),
 
             _buildProfileOption(
               icon: Icons.help_outline,
               title: 'Help & Support',
               subtitle: 'Get help with Rx Events',
-              onTap: () {
-                _showComingSoon('Help & Support');
-              },
+              onTap: _showHelpDialog,
             ),
 
             const SizedBox(height: 20),
@@ -135,23 +132,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: isDark ? const Color(0xFF1E293B) : context.card,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.08)
-              : Colors.grey.shade200,
+              : context.outline,
         ),
       ),
       child: Column(
         children: [
           CircleAvatar(
             radius: 42,
-            backgroundColor: AppColors.light,
-            child: const Text(
+            backgroundColor: context.tintSurface,
+            child: Text(
               'H',
               style: TextStyle(
-                color: AppColors.dark,
+                color: context.accentStrong,
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
@@ -166,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             'Event Organizer',
             style: TextStyle(
-              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+              color: isDark ? context.textFaint : context.textFaint,
               fontSize: 14,
             ),
           ),
@@ -174,7 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             _sessionProfile['email'] ?? 'hilda@rxevents.com',
             style: TextStyle(
-              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+              color: isDark ? context.textFaint : context.textFaint,
               fontSize: 14,
             ),
           ),
@@ -191,6 +188,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             value: '24',
             label: 'Events',
             icon: Icons.event_outlined,
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.events);
+            },
           ),
         ),
         const SizedBox(width: 12),
@@ -199,6 +199,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             value: '486',
             label: 'Attendees',
             icon: Icons.people_outline,
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.attendees);
+            },
           ),
         ),
         const SizedBox(width: 12),
@@ -207,6 +210,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             value: '₹6K',
             label: 'Revenue',
             icon: Icons.payments_outlined,
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.payments);
+            },
           ),
         ),
       ],
@@ -217,31 +223,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String value,
     required String label,
     required IconData icon,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.light,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: AppColors.dark, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              color: AppColors.dark,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+        decoration: BoxDecoration(
+          color: context.tintSurface,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: context.accentStrong, size: 24),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                color: context.accentStrong,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            label,
-            style: const TextStyle(color: AppColors.dark, fontSize: 12),
-          ),
-        ],
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(color: context.accentStrong, fontSize: 12),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -274,10 +285,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: AppColors.light,
+                    color: context.tintSurface,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(icon, color: AppColors.dark),
+                  child: Icon(icon, color: context.accentStrong),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -324,10 +335,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              color: AppColors.light,
+              color: context.tintSurface,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(Icons.dark_mode_outlined, color: AppColors.dark),
+            child: Icon(Icons.dark_mode_outlined, color: context.accentStrong),
           ),
           const SizedBox(width: 14),
           const Expanded(
@@ -348,7 +359,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Switch(
             value: isDark,
-            activeThumbColor: AppColors.primary,
+            activeThumbColor: context.accent,
             onChanged: (value) {
               ThemeController.setDarkMode(value);
 
@@ -504,7 +515,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Password updated successfully.'),
+                    content: Text(
+                      'Password validated for this demo session only. '
+                      'It is not stored anywhere yet.',
+                    ),
                   ),
                 );
               },
@@ -516,10 +530,111 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showComingSoon(String feature) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$feature will be available soon.')));
+  // ============================================================
+  // DOWNLOAD MY DATA (local demo summary)
+  // ============================================================
+
+  void _showDownloadDataDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Download My Data'),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'A copy of your demo data would include:',
+                style: TextStyle(fontSize: 12),
+              ),
+              SizedBox(height: 8),
+              Text(
+                '• Profile information\n'
+                '• 24 events\n'
+                '• 128 bookings\n'
+                '• 486 attendees\n'
+                '• Payment history',
+                style: TextStyle(fontSize: 12, height: 1.6),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Demo export prepared locally. '
+                      'No file was uploaded or emailed.',
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Prepare export'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // HELP & SUPPORT (local demo content)
+  // ============================================================
+
+  void _showHelpDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Help & Support'),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Quick help',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              SizedBox(height: 6),
+              Text(
+                '• Create an event from the + Create button.\n'
+                '• Open an event card to view, edit or share it.\n'
+                '• Use Reports to review revenue and top events.',
+                style: TextStyle(fontSize: 12, height: 1.5),
+              ),
+              SizedBox(height: 12),
+              Text(
+                'Contact',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              SizedBox(height: 6),
+              Text(
+                'support@rxevents.com\n+91 98765 43210',
+                style: TextStyle(fontSize: 12, height: 1.5),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showLogoutDialog() {

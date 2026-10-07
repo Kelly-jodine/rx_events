@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class NotificationItem {
   String title;
@@ -12,6 +13,10 @@ class NotificationItem {
   bool isImportant;
   IconData icon;
 
+  // Existing route opened when the notification is tapped. When it is
+  // null the notification only marks itself as read.
+  String? route;
+
   NotificationItem({
     required this.title,
     required this.message,
@@ -20,6 +25,7 @@ class NotificationItem {
     required this.isRead,
     required this.isImportant,
     required this.icon,
+    this.route,
   });
 }
 
@@ -38,62 +44,119 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   final List<NotificationItem> notifications = [
     NotificationItem(
-      title: 'Two Days To The Annual Tech Expo',
-      message:
-          'Check for final arrangements; number of seats, attendees\' list, exhibitions.',
+      title: 'New booking received',
+      message: 'Chimuka booked 2 seats for Annual Tech Expo 2026.',
       time: '2 min ago',
-      category: 'Events',
+      category: 'Bookings',
       isRead: false,
-      isImportant: true,
-      icon: Icons.calendar_month_outlined,
-    ),
-    NotificationItem(
-      title: 'System notification',
-      message: 'System update scheduled for 01-07-2026 at 01:50pm.',
-      time: '2 days ago',
-      category: 'Events',
-      isRead: false,
-      isImportant: false,
-      icon: Icons.settings_outlined,
-    ),
-    NotificationItem(
-      title: 'Send Email reminder',
-      message:
-          'Send email reminders about the tech expo to all participants and attendees.',
-      time: 'now',
-      category: 'Reminders',
-      isRead: false,
-      isImportant: true,
-      icon: Icons.notifications_none,
-    ),
-    NotificationItem(
-      title: 'Request meeting from Task Solutions',
-      message:
-          'Task Solutions wants to go over the final guest list for their end of year party.',
-      time: 'now',
-      category: 'Events',
-      isRead: true,
-      isImportant: false,
-      icon: Icons.mark_email_unread_outlined,
-    ),
-    NotificationItem(
-      title: 'Booking confirmation',
-      message: 'A new booking has been confirmed for Annual Tech Expo 2026.',
-      time: '1 hour ago',
-      category: 'Events',
-      isRead: true,
       isImportant: false,
       icon: Icons.book_online_outlined,
+      route: AppRoutes.bookings,
     ),
     NotificationItem(
       title: 'Payment received',
-      message: 'Payment of \$450 has been received for booking BK-1025.',
-      time: '3 hours ago',
-      category: 'Reminders',
-      isRead: true,
+      message:
+          '₹2,000 received from John Smith for TXN-2026-00125 '
+          '(Tech Conference 2026).',
+      time: '1 hour ago',
+      category: 'Payments',
+      isRead: false,
       isImportant: false,
       icon: Icons.payments_outlined,
+      route: AppRoutes.payments,
     ),
+    NotificationItem(
+      title: 'Event starts in 2 days',
+      message:
+          'Tech Conference 2026 on 28 September 2026 in Ahmedabad. '
+          'Review the final arrangements.',
+      time: '3 hours ago',
+      category: 'Events',
+      isRead: false,
+      isImportant: true,
+      icon: Icons.event_available_outlined,
+      route: AppRoutes.events,
+    ),
+    NotificationItem(
+      title: 'New attendee registration',
+      message:
+          'Kelly Jodine registered for Annual Tech Expo 2026 and is '
+          'awaiting check-in.',
+      time: '5 hours ago',
+      category: 'Attendees',
+      isRead: false,
+      isImportant: false,
+      icon: Icons.person_add_alt_outlined,
+      route: AppRoutes.attendees,
+    ),
+    NotificationItem(
+      title: 'Payment still pending',
+      message: 'BK - 1026 (Wedding Expo) has an unpaid balance of ₹3,500.',
+      time: '8 hours ago',
+      category: 'Payments',
+      isRead: false,
+      isImportant: true,
+      icon: Icons.schedule_outlined,
+      route: AppRoutes.payments,
+    ),
+    NotificationItem(
+      title: 'Employee assigned',
+      message:
+          'Anita Sharma was assigned to the registration desk for '
+          'Music Festival.',
+      time: 'Yesterday',
+      category: 'Team',
+      isRead: true,
+      isImportant: false,
+      icon: Icons.badge_outlined,
+      route: AppRoutes.employees,
+    ),
+    NotificationItem(
+      title: 'Event status updated',
+      message:
+          'Music Festival on 5 October 2026 is still a Draft. '
+          'Publish it to open registrations.',
+      time: '2 days ago',
+      category: 'Events',
+      isRead: true,
+      isImportant: false,
+      icon: Icons.event_note_outlined,
+      route: AppRoutes.events,
+    ),
+    NotificationItem(
+      title: 'Booking cancelled',
+      message:
+          'BK - 1027 (Michael Brown) was cancelled. 4 seats released '
+          'for Summer Music Festival.',
+      time: '3 days ago',
+      category: 'Bookings',
+      isRead: true,
+      isImportant: false,
+      icon: Icons.cancel_schedule_send_outlined,
+      route: AppRoutes.bookings,
+    ),
+    NotificationItem(
+      title: 'Attendees checked in',
+      message:
+          'Hilda Faith and Biira Anitah were checked in for '
+          'Annual Tech Expo 2026.',
+      time: '4 days ago',
+      category: 'Attendees',
+      isRead: true,
+      isImportant: false,
+      icon: Icons.how_to_reg_outlined,
+      route: AppRoutes.attendees,
+    ),
+  ];
+
+  static const List<String> categories = [
+    'All',
+    'Unread',
+    'Events',
+    'Bookings',
+    'Payments',
+    'Attendees',
+    'Team',
   ];
 
   @override
@@ -125,10 +188,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   int get importantCount =>
       notifications.where((item) => item.isImportant).length;
 
-  void _markAsRead(NotificationItem notification) {
+  void _openNotification(NotificationItem notification) {
     setState(() {
       notification.isRead = true;
     });
+
+    final route = notification.route;
+
+    if (route == null) {
+      return;
+    }
+
+    Navigator.pushNamed(context, route);
   }
 
   void _markAllAsRead() {
@@ -173,34 +244,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Filter Notifications',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 15),
-                ...['All', 'Unread', 'Events', 'Reminders'].map(
+                ...categories.map(
                   (category) => ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: Icon(
-                      category == 'All'
-                          ? Icons.notifications_outlined
-                          : category == 'Unread'
-                          ? Icons.mark_email_unread_outlined
-                          : category == 'Events'
-                          ? Icons.event_outlined
-                          : Icons.alarm_outlined,
-                      color: AppColors.primary,
+                      _categoryIcon(category),
+                      color: context.accent,
                     ),
                     title: Text(category),
                     trailing: selectedCategory == category
-                        ? const Icon(
-                            Icons.check_circle,
-                            color: AppColors.primary,
-                          )
+                        ? Icon(Icons.check_circle, color: context.accent)
                         : null,
                     onTap: () {
                       Navigator.pop(context, category);
@@ -228,12 +290,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final displayedNotifications = filteredNotifications;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
       // APP BAR
       appBar: AppBar(
-        backgroundColor: AppColors.light,
-        foregroundColor: AppColors.text,
+        backgroundColor: context.appBarSurface,
+        foregroundColor: context.textPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -241,9 +303,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             Navigator.pop(context);
           },
         ),
-        title: const Text(
+        title: Text(
           'Notifications',
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.text),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: context.textPrimary,
+          ),
         ),
         actions: [
           IconButton(
@@ -258,7 +323,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         children: [
           // TOP SECTION
           Container(
-            color: AppColors.light,
+            color: context.tintSurface,
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 14),
             child: Column(
               children: [
@@ -300,7 +365,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       child: Container(
                         height: 42,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: context.card,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: TextField(
@@ -327,9 +392,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         icon: const Icon(Icons.filter_alt_outlined, size: 17),
                         label: const Text('Filter'),
                         style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: AppColors.text,
-                          side: BorderSide(color: Colors.grey.shade300),
+                          backgroundColor: context.card,
+                          foregroundColor: context.textPrimary,
+                          side: BorderSide(color: context.outlineStrong),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -345,12 +410,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: [
-                      _buildCategoryChip('All'),
-                      _buildCategoryChip('Unread'),
-                      _buildCategoryChip('Events'),
-                      _buildCategoryChip('Reminders'),
-                    ],
+                    children: categories.map(_buildCategoryChip).toList(),
                   ),
                 ),
               ],
@@ -398,7 +458,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             Navigator.pushReplacementNamed(context, AppRoutes.profile);
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
@@ -410,7 +470,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             label: 'Events',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle, size: 38, color: AppColors.primary),
+            icon: Icon(Icons.add_circle, size: 38, color: context.accent),
             label: 'Create',
           ),
           BottomNavigationBarItem(
@@ -431,33 +491,61 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         children: [
-          Icon(icon, color: AppColors.text, size: 24),
+          Icon(icon, color: context.textPrimary, size: 24),
           const SizedBox(height: 5),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: AppColors.text,
+              color: context.textPrimary,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w500,
-              color: AppColors.text,
+              color: context.textPrimary,
             ),
           ),
         ],
       ),
     );
+  }
+
+  static IconData _categoryIcon(String category) {
+    switch (category) {
+      case 'All':
+        return Icons.notifications_outlined;
+
+      case 'Unread':
+        return Icons.mark_email_unread_outlined;
+
+      case 'Events':
+        return Icons.event_outlined;
+
+      case 'Bookings':
+        return Icons.book_online_outlined;
+
+      case 'Payments':
+        return Icons.payments_outlined;
+
+      case 'Attendees':
+        return Icons.people_outline;
+
+      case 'Team':
+        return Icons.badge_outlined;
+
+      default:
+        return Icons.notifications_none;
+    }
   }
 
   Widget _buildCategoryChip(String category) {
@@ -473,7 +561,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         margin: const EdgeInsets.only(right: 7),
         padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : Colors.white,
+          color: selected ? AppColors.primary : context.card,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -481,7 +569,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w500,
-            color: selected ? Colors.white : AppColors.text,
+            color: selected ? Colors.white : context.textPrimary,
           ),
         ),
       ),
@@ -506,118 +594,122 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       },
       child: InkWell(
         onTap: () {
-          _markAsRead(notification);
+          _openNotification(notification);
         },
         borderRadius: BorderRadius.circular(14),
         child: Container(
           decoration: BoxDecoration(
-            color: notification.isRead ? Colors.white : AppColors.light,
+            color: notification.isRead ? context.card : context.tintSurface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: notification.isRead
-                  ? Colors.grey.shade200
+                  ? context.outline
                   : AppColors.primary.withValues(alpha: 0.25),
             ),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // COLOR INDICATOR
-              Container(
-                width: 6,
-                decoration: BoxDecoration(
-                  color: notification.isImportant
-                      ? Colors.orange
-                      : AppColors.primary,
-                  borderRadius: const BorderRadius.horizontal(
-                    left: Radius.circular(14),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 10),
-
-              // ICON
-              Center(
-                child: Container(
-                  width: 38,
-                  height: 38,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // COLOR INDICATOR
+                Container(
+                  width: 6,
                   decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    notification.icon,
-                    size: 20,
-                    color: AppColors.text,
+                    color: notification.isImportant
+                        ? Colors.orange
+                        : AppColors.primary,
+                    borderRadius: const BorderRadius.horizontal(
+                      left: Radius.circular(14),
+                    ),
                   ),
                 ),
-              ),
 
-              const SizedBox(width: 10),
+                const SizedBox(width: 10),
 
-              // CONTENT
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 11),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              notification.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: notification.isRead
-                                    ? FontWeight.w600
-                                    : FontWeight.bold,
-                                color: AppColors.text,
+                // ICON
+                Center(
+                  child: Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: context.cardAlt,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      notification.icon,
+                      size: 20,
+                      color: context.textPrimary,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 10),
+
+                // CONTENT
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 11),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                notification.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: notification.isRead
+                                      ? FontWeight.w600
+                                      : FontWeight.bold,
+                                  color: context.textPrimary,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            notification.time,
-                            style: TextStyle(
-                              fontSize: 8,
-                              color: Colors.grey.shade600,
+                            const SizedBox(width: 5),
+                            Text(
+                              notification.time,
+                              style: TextStyle(
+                                fontSize: 8,
+                                color: context.textFaint,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        notification.message,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 10,
-                          height: 1.35,
-                          color: Colors.grey.shade700,
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 5),
+                        Text(
+                          notification.message,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 10,
+                            height: 1.35,
+                            color: context.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              // IMPORTANT BUTTON
-              IconButton(
-                tooltip: 'Important',
-                onPressed: () {
-                  _toggleImportant(notification);
-                },
-                icon: Icon(
-                  notification.isImportant ? Icons.star : Icons.star_border,
-                  color: notification.isImportant ? Colors.orange : Colors.grey,
-                  size: 19,
+                // IMPORTANT BUTTON
+                IconButton(
+                  tooltip: 'Important',
+                  onPressed: () {
+                    _toggleImportant(notification);
+                  },
+                  icon: Icon(
+                    notification.isImportant ? Icons.star : Icons.star_border,
+                    color: notification.isImportant
+                        ? Colors.orange
+                        : Colors.grey,
+                    size: 19,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -635,29 +727,29 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppColors.light,
+                color: context.tintSurface,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.notifications_none,
                 size: 40,
-                color: AppColors.primary,
+                color: context.accent,
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'No notifications found',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: context.textPrimary,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               'Try changing your search or filter.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              style: TextStyle(fontSize: 12, color: context.textFaint),
             ),
           ],
         ),

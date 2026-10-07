@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class EmployeeDetailsScreen extends StatefulWidget {
   const EmployeeDetailsScreen({super.key});
@@ -11,6 +12,16 @@ class EmployeeDetailsScreen extends StatefulWidget {
 
 class _EmployeeDetailsScreenState extends State<EmployeeDetailsScreen> {
   bool? _statusOverride;
+
+  // Assigned locally for this visit only. Not persisted anywhere.
+  String? _assignedEvent;
+
+  static const List<String> _demoEvents = [
+    'Annual Tech Expo 2026',
+    'Tech Conference 2026',
+    'Wedding Expo',
+    'Summer Music Festival',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +46,7 @@ class _EmployeeDetailsScreenState extends State<EmployeeDetailsScreen> {
     final initial = name.isEmpty ? '?' : name[0].toUpperCase();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
       appBar: AppBar(
         title: const Text('Employee Details'),
@@ -61,15 +72,15 @@ class _EmployeeDetailsScreenState extends State<EmployeeDetailsScreen> {
                     width: 82,
                     height: 82,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: context.card,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.light, width: 4),
+                      border: Border.all(color: context.tintSurface, width: 4),
                     ),
                     child: Center(
                       child: Text(
                         initial,
-                        style: const TextStyle(
-                          color: AppColors.primary,
+                        style: TextStyle(
+                          color: context.accent,
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                         ),
@@ -127,11 +138,17 @@ class _EmployeeDetailsScreenState extends State<EmployeeDetailsScreen> {
             _buildInfoCard([
               _buildInfoRow(Icons.calendar_today_outlined, 'Joined', joined),
               _buildInfoRow(Icons.event_outlined, 'Assigned Events', events),
+              if (_assignedEvent != null)
+                _buildInfoRow(
+                  Icons.add_task_outlined,
+                  'Assigned Now',
+                  _assignedEvent!,
+                ),
               _buildInfoRow(
                 Icons.verified_outlined,
                 'Status',
                 isActive ? 'Active' : 'Inactive',
-                valueColor: isActive ? AppColors.primary : Colors.grey.shade700,
+                valueColor: isActive ? context.accent : context.textMuted,
               ),
             ]),
 
@@ -170,8 +187,8 @@ class _EmployeeDetailsScreenState extends State<EmployeeDetailsScreen> {
                 ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: isActive
-                      ? Colors.red.shade700
-                      : AppColors.primary,
+                      ? context.dangerText
+                      : context.accent,
                   side: BorderSide(
                     color: isActive ? Colors.red.shade300 : AppColors.primary,
                   ),
@@ -189,12 +206,57 @@ class _EmployeeDetailsScreenState extends State<EmployeeDetailsScreen> {
   }
 
   void _assignEvent() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Event assignment will be connected to the database later.',
-        ),
-      ),
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Assign Event'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: _demoEvents
+                  .map(
+                    (event) => ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(
+                        _assignedEvent == event
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked,
+                        color: context.accent,
+                      ),
+                      title: Text(event, style: const TextStyle(fontSize: 13)),
+                      onTap: () {
+                        setState(() {
+                          _assignedEvent = event;
+                        });
+
+                        Navigator.pop(dialogContext);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Assigned to $event for this visit only. '
+                              'Not saved permanently.',
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -250,10 +312,10 @@ class _EmployeeDetailsScreenState extends State<EmployeeDetailsScreen> {
       alignment: Alignment.centerLeft,
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: AppColors.text,
+          color: context.textPrimary,
         ),
       ),
     );
@@ -264,7 +326,7 @@ class _EmployeeDetailsScreenState extends State<EmployeeDetailsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(children: children),
@@ -281,7 +343,7 @@ class _EmployeeDetailsScreenState extends State<EmployeeDetailsScreen> {
       padding: const EdgeInsets.symmetric(vertical: 11),
       child: Row(
         children: [
-          Icon(icon, size: 19, color: AppColors.primary),
+          Icon(icon, size: 19, color: context.accent),
 
           const SizedBox(width: 10),
 
@@ -298,7 +360,7 @@ class _EmployeeDetailsScreenState extends State<EmployeeDetailsScreen> {
               value,
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: valueColor ?? AppColors.text,
+                color: valueColor ?? context.textPrimary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),

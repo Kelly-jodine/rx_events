@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -42,14 +43,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.light,
+      backgroundColor: context.tintSurface,
       body: SafeArea(
         child: Column(
           children: [
             // ==================================================
             // PAGE VIEW
             // ==================================================
-
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
@@ -72,28 +72,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             // ==================================================
             // PAGE INDICATORS
             // ==================================================
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                pages.length,
-                (index) {
-                  final isActive = currentPage == index;
+              children: List.generate(pages.length, (index) {
+                final isActive = currentPage == index;
 
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                    width: isActive ? 7 : 6,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: isActive
-                          ? AppColors.primary
-                          : const Color(0xFFB6D9D9),
-                      shape: BoxShape.circle,
-                    ),
-                  );
-                },
-              ),
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: isActive ? 7 : 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? AppColors.primary
+                        : const Color(0xFFB6D9D9),
+                    shape: BoxShape.circle,
+                  ),
+                );
+              }),
             ),
 
             const SizedBox(height: 32),
@@ -101,7 +97,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             // ==================================================
             // GET STARTED / NEXT BUTTON
             // ==================================================
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: SizedBox(
@@ -113,16 +108,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     elevation: 5,
-                    shadowColor:
-                        AppColors.dark.withValues(alpha: 0.25),
+                    shadowColor: context.accentStrong.withValues(alpha: 0.25),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   child: Text(
-                    currentPage == pages.length - 1
-                        ? 'Get Started'
-                        : 'Next',
+                    currentPage == pages.length - 1 ? 'Get Started' : 'Next',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -159,12 +151,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               // ------------------------------------------------
               // TITLE
               // ------------------------------------------------
-
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.black,
+                style: TextStyle(
+                  color: context.textPrimary,
                   fontSize: 22,
                   height: 1.05,
                   fontWeight: FontWeight.bold,
@@ -176,12 +167,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               // ------------------------------------------------
               // DESCRIPTION
               // ------------------------------------------------
-
               Text(
                 description,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.black87,
+                style: TextStyle(
+                  color: context.textPrimary,
                   fontSize: 11,
                   height: 1.25,
                 ),
@@ -192,10 +182,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               // ------------------------------------------------
               // ILLUSTRATION AREA
               // ------------------------------------------------
-
-              Expanded(
-                child: _buildIllustrationArea(pageIndex),
-              ),
+              Expanded(child: _buildIllustrationArea(pageIndex)),
             ],
           ),
         );
@@ -214,35 +201,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         // ------------------------------------------------------
         // DECORATIVE CIRCLES
         // ------------------------------------------------------
+        Positioned(top: 10, left: -18, child: _buildCircle(45)),
 
-        Positioned(
-          top: 10,
-          left: -18,
-          child: _buildCircle(45),
-        ),
+        Positioned(top: 12, right: 28, child: _buildCircle(48)),
 
-        Positioned(
-          top: 12,
-          right: 28,
-          child: _buildCircle(48),
-        ),
+        Positioned(bottom: 70, left: -15, child: _buildCircle(48)),
 
-        Positioned(
-          bottom: 70,
-          left: -15,
-          child: _buildCircle(48),
-        ),
-
-        Positioned(
-          bottom: 38,
-          right: 10,
-          child: _buildCircle(62),
-        ),
+        Positioned(bottom: 38, right: 10, child: _buildCircle(62)),
 
         // ------------------------------------------------------
         // TEMPORARY ILLUSTRATION
         // ------------------------------------------------------
-
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -256,7 +225,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Icon(
                 _getIllustrationIcon(pageIndex),
                 size: 105,
-                color: AppColors.primary,
+                color: context.accent,
               ),
             ),
           ],
@@ -306,10 +275,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _handleButtonPress() {
     if (currentPage == pages.length - 1) {
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.login,
-      );
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
     } else {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 350),

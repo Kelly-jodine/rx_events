@@ -27,8 +27,6 @@ class AppTheme {
       backgroundColor: Color(0xFF115E59),
       foregroundColor: Colors.white,
     ),
-    cardTheme: const CardThemeData(
-      color: Color(0xFF1E293B),
-    ),
+    cardTheme: const CardThemeData(color: Color(0xFF1E293B)),
   );
 }

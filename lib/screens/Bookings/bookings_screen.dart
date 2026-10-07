@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
@@ -52,8 +53,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
   List<Map<String, String>> get filteredBookings {
     return bookings.where((booking) {
-      final matchesFilter = selectedFilter == 'All' ||
-          booking['status'] == selectedFilter;
+      final matchesFilter =
+          selectedFilter == 'All' || booking['status'] == selectedFilter;
 
       final query = searchQuery.toLowerCase();
 
@@ -69,11 +70,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
   void _showFilterOptions() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: context.card,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return SafeArea(
@@ -83,12 +82,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Filter Bookings',
                   style: TextStyle(
                     fontSize: 21,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
 
@@ -112,10 +111,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(
-        isSelected
-            ? Icons.radio_button_checked
-            : Icons.radio_button_unchecked,
-        color: AppColors.primary,
+        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+        color: context.accent,
       ),
       title: Text(filter),
       onTap: () {
@@ -129,17 +126,13 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   void _openBookingDetails(Map<String, String> booking) {
-    Navigator.pushNamed(
-      context,
-      AppRoutes.bookingDetails,
-      arguments: booking,
-    );
+    Navigator.pushNamed(context, AppRoutes.bookingDetails, arguments: booking);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
       appBar: AppBar(
         title: const Text('Bookings'),
@@ -154,12 +147,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // HEADER
-            const Text(
+            Text(
               'Manage Bookings',
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: context.textPrimary,
               ),
             ),
 
@@ -167,10 +160,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
             const Text(
               'View and manage all event reservations.',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey, fontSize: 14),
             ),
 
             const SizedBox(height: 18),
@@ -184,12 +174,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
               },
               decoration: InputDecoration(
                 hintText: 'Search bookings...',
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: Colors.grey,
-                ),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: context.card,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -204,20 +191,13 @@ class _BookingsScreenState extends State<BookingsScreen> {
               alignment: Alignment.centerLeft,
               child: OutlinedButton.icon(
                 onPressed: _showFilterOptions,
-                icon: const Icon(
-                  Icons.filter_list,
-                  size: 18,
-                ),
+                icon: const Icon(Icons.filter_list, size: 18),
                 label: Text(
-                  selectedFilter == 'All'
-                      ? 'Filter'
-                      : selectedFilter,
+                  selectedFilter == 'All' ? 'Filter' : selectedFilter,
                 ),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primary,
-                  side: const BorderSide(
-                    color: AppColors.primary,
-                  ),
+                  foregroundColor: context.accent,
+                  side: const BorderSide(color: AppColors.primary),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 18,
                     vertical: 12,
@@ -246,10 +226,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           SizedBox(height: 12),
                           Text(
                             'No bookings found.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                            ),
+                            style: TextStyle(color: Colors.grey, fontSize: 16),
                           ),
                         ],
                       ),
@@ -282,9 +259,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       child: Card(
         elevation: 1.5,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         child: Padding(
           padding: const EdgeInsets.all(16),
 
@@ -297,12 +272,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.light,
+                      color: context.tintSurface,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.confirmation_number_outlined,
-                      color: AppColors.primary,
+                      color: context.accent,
                     ),
                   ),
 
@@ -314,10 +289,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       children: [
                         Text(
                           'Booking #${booking['id']!.replaceAll('BK - ', '')}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.text,
+                            color: context.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 3),
@@ -345,18 +320,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
               // EVENT
               Row(
                 children: [
-                  const Icon(
-                    Icons.event_outlined,
-                    size: 18,
-                    color: AppColors.primary,
-                  ),
+                  Icon(Icons.event_outlined, size: 18, color: context.accent),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       booking['event']!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w500,
-                        color: AppColors.text,
+                        color: context.textPrimary,
                       ),
                     ),
                   ),
@@ -377,10 +348,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   Expanded(
                     child: Text(
                       booking['date']!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ),
 
@@ -392,10 +360,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   const SizedBox(width: 5),
                   Text(
                     '${booking['seats']} seats',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ],
               ),
@@ -411,7 +376,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                         : Icons.access_time,
                     size: 17,
                     color: booking['payment'] == 'Paid'
-                        ? AppColors.primary
+                        ? context.accent
                         : Colors.orange,
                   ),
 
@@ -423,17 +388,17 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: booking['payment'] == 'Paid'
-                          ? AppColors.dark
-                          : Colors.orange.shade800,
+                          ? context.accentStrong
+                          : context.warningText,
                     ),
                   ),
 
                   const Spacer(),
 
-                  const Text(
+                  Text(
                     'View Details →',
                     style: TextStyle(
-                      color: AppColors.primary,
+                      color: context.accent,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
@@ -454,28 +419,25 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
     switch (status) {
       case 'Confirmed':
-        backgroundColor = AppColors.light;
-        textColor = AppColors.dark;
+        backgroundColor = context.tintSurface;
+        textColor = context.accentStrong;
         icon = Icons.check_circle_outline;
         break;
 
       case 'Pending':
-        backgroundColor = Colors.orange.shade50;
-        textColor = Colors.orange.shade800;
+        backgroundColor = context.warningSurface;
+        textColor = context.warningText;
         icon = Icons.access_time;
         break;
 
       default:
-        backgroundColor = Colors.red.shade50;
-        textColor = Colors.red.shade700;
+        backgroundColor = context.dangerSurface;
+        textColor = context.dangerText;
         icon = Icons.cancel_outlined;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 9,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(20),
@@ -483,11 +445,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 13,
-            color: textColor,
-          ),
+          Icon(icon, size: 13, color: textColor),
           const SizedBox(width: 4),
           Text(
             status,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   const EventDetailsScreen({super.key});
@@ -12,6 +13,8 @@ class EventDetailsScreen extends StatefulWidget {
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
   Map<Object?, Object?> _sessionEdits = const {};
+
+  bool _isDescriptionExpanded = false;
 
   Future<void> _openEditEvent() async {
     final updatedEvent = await Navigator.pushNamed<Object?>(
@@ -36,10 +39,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         ? arguments
         : const <Object?, Object?>{};
 
-    return <Object?, Object?>{
-      ...routeEvent,
-      ..._sessionEdits,
-    };
+    return <Object?, Object?>{...routeEvent, ..._sessionEdits};
   }
 
   @override
@@ -49,11 +49,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     final title = _readText(
       event,
       'title',
-      fallback: _readText(
-        event,
-        'name',
-        fallback: 'Event Details',
-      ),
+      fallback: _readText(event, 'name', fallback: 'Event Details'),
     );
 
     final status = _readText(event, 'status');
@@ -78,30 +74,18 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
     final timeLabel = _readTimeRange(event);
 
-    final timeZoneLabel = _readText(
-      event,
-      'timeZone',
-      fallback: 'Local time',
-    );
+    final timeZoneLabel = _readText(event, 'timeZone', fallback: 'Local time');
 
     final location = _readText(
       event,
       'location',
-      fallback: _readText(
-        event,
-        'venue',
-        fallback: 'Location to be announced',
-      ),
+      fallback: _readText(event, 'venue', fallback: 'Location to be announced'),
     );
 
     final address = _readText(
       event,
       'address',
-      fallback: _readText(
-        event,
-        'city',
-        fallback: 'Event venue',
-      ),
+      fallback: _readText(event, 'city', fallback: 'Event venue'),
     );
 
     final attendees =
@@ -110,8 +94,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         _readInt(event, 'registered');
 
     final capacity =
-        _readInt(event, 'capacity') ??
-        _readInt(event, 'maxAttendees');
+        _readInt(event, 'capacity') ?? _readInt(event, 'maxAttendees');
 
     final String attendeesTitle;
     final String attendeesSubtitle;
@@ -130,27 +113,18 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       attendeesSubtitle = 'Registration';
     }
 
-    final description = _readText(
-      event,
-      'description',
-    );
+    final description = _readText(event, 'description');
 
-    final summary = _readText(
-      event,
-      'summary',
-      fallback: description,
-    );
+    final summary = _readText(event, 'summary', fallback: description);
 
     final blurb = summary.isEmpty
         ? 'No description provided for this event.'
         : summary;
 
-    final details = description.isEmpty
-        ? blurb
-        : description;
+    final details = description.isEmpty ? blurb : description;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -162,8 +136,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             tooltip: 'Edit Event',
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.notifications);
+            },
             icon: const Icon(Icons.notifications_none),
+            tooltip: 'Notifications',
           ),
         ],
       ),
@@ -180,22 +157,20 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   child: imagePath.isEmpty
                       ? _buildImagePlaceholder()
                       : imagePath.startsWith('assets/')
-                          ? Image.asset(
-                              imagePath,
-                              fit: BoxFit.cover,
-                              errorBuilder:
-                                  (context, error, stackTrace) {
-                                return _buildImagePlaceholder();
-                              },
-                            )
-                          : Image.network(
-                              imagePath,
-                              fit: BoxFit.cover,
-                              errorBuilder:
-                                  (context, error, stackTrace) {
-                                return _buildImagePlaceholder();
-                              },
-                            ),
+                      ? Image.asset(
+                          imagePath,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return _buildImagePlaceholder();
+                          },
+                        )
+                      : Image.network(
+                          imagePath,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return _buildImagePlaceholder();
+                          },
+                        ),
                 ),
 
                 // STATUS
@@ -204,15 +179,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     top: 16,
                     right: 16,
                     child: Container(
-                      padding:
-                          const EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 7,
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.primary,
-                        borderRadius:
-                            BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         status,
@@ -230,15 +203,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   bottom: 12,
                   right: 12,
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 10,
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.black87,
-                      borderRadius:
-                          BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Row(
                       children: [
@@ -250,10 +221,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                         SizedBox(width: 5),
                         Text(
                           '1/1',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: Colors.white, fontSize: 12),
                         ),
                       ],
                     ),
@@ -268,44 +236,56 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(20),
+                color: context.card,
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color:
-                        Colors.black.withValues(alpha: 0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.text,
+                            color: context.textPrimary,
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       _buildCircleAction(
                         icon: Icons.share_outlined,
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Sharing will be connected later.'),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(width: 8),
                       _buildCircleAction(
                         icon: Icons.favorite_border,
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Favourites will be connected later.',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -328,8 +308,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     children: [
                       Expanded(
                         child: _buildInfoItem(
-                          icon:
-                              Icons.calendar_month_outlined,
+                          icon: Icons.calendar_month_outlined,
                           title: dateLabel.isEmpty
                               ? 'Date to be announced'
                               : dateLabel,
@@ -338,8 +317,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       ),
                       Expanded(
                         child: _buildInfoItem(
-                          icon:
-                              Icons.access_time_outlined,
+                          icon: Icons.access_time_outlined,
                           title: timeLabel.isEmpty
                               ? 'Time to be announced'
                               : timeLabel,
@@ -356,8 +334,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     children: [
                       Expanded(
                         child: _buildInfoItem(
-                          icon:
-                              Icons.location_on_outlined,
+                          icon: Icons.location_on_outlined,
                           title: location,
                           subtitle: address,
                         ),
@@ -378,42 +355,42 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             // DESCRIPTION
             Container(
               width: double.infinity,
-              margin:
-                  const EdgeInsets.symmetric(horizontal: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(20),
+                color: context.card,
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color:
-                        Colors.black.withValues(alpha: 0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
                 ],
               ),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Description',
                         style: TextStyle(
                           fontSize: 21,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.text,
+                          color: context.textPrimary,
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
-                        child:
-                            const Text('Read more'),
+                        onPressed: () {
+                          setState(() {
+                            _isDescriptionExpanded = !_isDescriptionExpanded;
+                          });
+                        },
+                        child: Text(
+                          _isDescriptionExpanded ? 'Read less' : 'Read more',
+                        ),
                       ),
                     ],
                   ),
@@ -422,6 +399,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
                   Text(
                     details,
+                    maxLines: _isDescriptionExpanded ? null : 4,
+                    overflow: _isDescriptionExpanded
+                        ? null
+                        : TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 15,
                       color: Colors.blueGrey,
@@ -437,36 +418,26 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             // FEATURES
             Container(
               width: double.infinity,
-              margin:
-                  const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.symmetric(
-                vertical: 20,
-                horizontal: 10,
-              ),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(20),
+                color: context.card,
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildFeature(
                     icon: Icons.people_outline,
                     title: 'Networking',
                   ),
-                  _buildFeature(
-                    icon: Icons.mic_none,
-                    title: 'Speakers',
-                  ),
+                  _buildFeature(icon: Icons.mic_none, title: 'Speakers'),
                   _buildFeature(
                     icon: Icons.co_present_outlined,
                     title: 'Workshops',
                   ),
                   _buildFeature(
-                    icon:
-                        Icons.workspace_premium_outlined,
+                    icon: Icons.workspace_premium_outlined,
                     title: 'Certificate',
                   ),
                 ],
@@ -478,24 +449,21 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             // ORGANIZER
             Container(
               width: double.infinity,
-              margin:
-                  const EdgeInsets.symmetric(horizontal: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(20),
+                color: context.card,
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Organizer',
                     style: TextStyle(
                       fontSize: 21,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.text,
+                      color: context.textPrimary,
                     ),
                   ),
 
@@ -503,30 +471,28 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
                   Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 28,
-                        backgroundColor: AppColors.light,
+                        backgroundColor: context.tintSurface,
                         child: Icon(
                           Icons.event,
                           size: 30,
-                          color: AppColors.primary,
+                          color: context.accent,
                         ),
                       ),
 
                       const SizedBox(width: 12),
 
-                      const Expanded(
+                      Expanded(
                         child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Rx Events',
                               style: TextStyle(
                                 fontSize: 17,
-                                fontWeight:
-                                    FontWeight.bold,
-                                color: AppColors.text,
+                                fontWeight: FontWeight.bold,
+                                color: context.textPrimary,
                               ),
                             ),
                             SizedBox(height: 4),
@@ -542,9 +508,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       ),
 
                       OutlinedButton(
-                        onPressed: () {},
-                        child:
-                            const Text('View Profile'),
+                        onPressed: () {
+                          Navigator.pushNamed(context, AppRoutes.profile);
+                        },
+                        child: const Text('View Profile'),
                       ),
                     ],
                   ),
@@ -556,29 +523,20 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
             // ACTION BUTTONS
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.calendar_month_outlined,
-                      ),
-                      label:
-                          const Text('Add to Calendar'),
-                      style:
-                          OutlinedButton.styleFrom(
-                        foregroundColor:
-                            AppColors.primary,
-                        side: const BorderSide(
-                          color: AppColors.primary,
-                        ),
-                        padding:
-                            const EdgeInsets.symmetric(
-                          vertical: 15,
-                        ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, AppRoutes.calendar);
+                      },
+                      icon: const Icon(Icons.calendar_month_outlined),
+                      label: const Text('Add to Calendar'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: context.accent,
+                        side: const BorderSide(color: AppColors.primary),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                     ),
                   ),
@@ -588,20 +546,12 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: _openEditEvent,
-                      icon: const Icon(
-                        Icons.edit_outlined,
-                      ),
-                      label:
-                          const Text('Edit Event'),
-                      style:
-                          ElevatedButton.styleFrom(
-                        backgroundColor:
-                            AppColors.primary,
+                      icon: const Icon(Icons.edit_outlined),
+                      label: const Text('Edit Event'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
-                        padding:
-                            const EdgeInsets.symmetric(
-                          vertical: 15,
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                     ),
                   ),
@@ -618,18 +568,19 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   Widget _buildCircleAction({
     required IconData icon,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: const BoxDecoration(
-        color: AppColors.light,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        icon,
-        color: AppColors.primary,
-        size: 21,
+    return Material(
+      color: context.tintSurface,
+      shape: const CircleBorder(),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: SizedBox(
+          width: 42,
+          height: 42,
+          child: Icon(icon, color: context.accent, size: 21),
+        ),
       ),
     );
   }
@@ -640,45 +591,36 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     required String subtitle,
   }) {
     return Row(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           width: 42,
           height: 42,
-          decoration: const BoxDecoration(
-            color: AppColors.light,
+          decoration: BoxDecoration(
+            color: context.tintSurface,
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            color: AppColors.primary,
-            size: 21,
-          ),
+          child: Icon(icon, color: context.accent, size: 21),
         ),
 
         const SizedBox(width: 10),
 
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.text,
+                  color: context.textPrimary,
                 ),
               ),
               const SizedBox(height: 3),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Colors.blueGrey,
-                ),
+                style: const TextStyle(fontSize: 11, color: Colors.blueGrey),
               ),
             ],
           ),
@@ -687,32 +629,25 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     );
   }
 
-  Widget _buildFeature({
-    required IconData icon,
-    required String title,
-  }) {
+  Widget _buildFeature({required IconData icon, required String title}) {
     return Column(
       children: [
         Container(
           width: 48,
           height: 48,
-          decoration: const BoxDecoration(
-            color: AppColors.light,
+          decoration: BoxDecoration(
+            color: context.tintSurface,
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            color: AppColors.primary,
-            size: 24,
-          ),
+          child: Icon(icon, color: context.accent, size: 24),
         ),
         const SizedBox(height: 7),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w500,
-            color: AppColors.text,
+            color: context.textPrimary,
           ),
         ),
       ],
@@ -735,10 +670,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     return text.isEmpty ? fallback : text;
   }
 
-  static int? _readInt(
-    Map<Object?, Object?> event,
-    String key,
-  ) {
+  static int? _readInt(Map<Object?, Object?> event, String key) {
     final value = event[key];
 
     if (value is int) {
@@ -749,14 +681,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       return value.toInt();
     }
 
-    return int.tryParse(
-      value?.toString().trim() ?? '',
-    );
+    return int.tryParse(value?.toString().trim() ?? '');
   }
 
-  static String _readTimeRange(
-    Map<Object?, Object?> event,
-  ) {
+  static String _readTimeRange(Map<Object?, Object?> event) {
     final range = _readText(event, 'time');
 
     if (range.isNotEmpty) {
@@ -823,8 +751,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       'december',
     ];
 
-    final index =
-        months.indexOf(name.toLowerCase());
+    final index = months.indexOf(name.toLowerCase());
 
     return index == -1 ? null : index + 1;
   }
@@ -872,13 +799,28 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   Widget _buildImagePlaceholder() {
     return Container(
-      color: AppColors.light,
-      child: const Center(
-        child: Icon(
-          Icons.image_not_supported_outlined,
-          size: 50,
-          color: AppColors.primary,
-        ),
+      width: double.infinity,
+      height: double.infinity,
+      color: context.tintSurface,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.event, size: 50, color: context.accent),
+          SizedBox(height: 10),
+          Text(
+            'Rx Events',
+            style: TextStyle(
+              color: context.accent,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            'Event image unavailable',
+            style: TextStyle(color: Colors.blueGrey, fontSize: 12),
+          ),
+        ],
       ),
     );
   }

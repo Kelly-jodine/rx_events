@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for the network images used on Event Details,
+         Edit Event and Reports screens. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="rx_events"
         android:name="${applicationName}"

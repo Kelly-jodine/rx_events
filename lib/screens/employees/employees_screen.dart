@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class EmployeesScreen extends StatefulWidget {
   const EmployeesScreen({super.key});
@@ -69,8 +70,8 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
 
   List<Map<String, String>> get filteredEmployees {
     return employees.where((employee) {
-      final matchesFilter = selectedFilter == 'All' ||
-          employee['status'] == selectedFilter;
+      final matchesFilter =
+          selectedFilter == 'All' || employee['status'] == selectedFilter;
 
       final query = searchQuery.toLowerCase();
 
@@ -85,9 +86,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
   }
 
   int get activeEmployees {
-    return employees
-        .where((employee) => employee['status'] == 'Active')
-        .length;
+    return employees.where((employee) => employee['status'] == 'Active').length;
   }
 
   int get inactiveEmployees {
@@ -99,11 +98,9 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
   void _showFilterOptions() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: context.card,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return SafeArea(
@@ -113,12 +110,12 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Filter Employees',
                   style: TextStyle(
                     fontSize: 21,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -139,10 +136,8 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(
-        isSelected
-            ? Icons.radio_button_checked
-            : Icons.radio_button_unchecked,
-        color: AppColors.primary,
+        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+        color: context.accent,
       ),
       title: Text(filter),
       onTap: () {
@@ -164,19 +159,138 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
   }
 
   void _addEmployee() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Add Employee will be connected to the database later.',
-        ),
-      ),
-    );
+    final nameController = TextEditingController();
+    final emailController = TextEditingController();
+    final positionController = TextEditingController();
+    String department = 'Operations';
+
+    const departments = ['Operations', 'Management', 'Support', 'Production'];
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return AlertDialog(
+              title: const Text('Add Employee'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(labelText: 'Full name'),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(labelText: 'Email'),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: positionController,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(labelText: 'Position'),
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      initialValue: department,
+                      decoration: const InputDecoration(
+                        labelText: 'Department',
+                      ),
+                      items: departments
+                          .map(
+                            (name) => DropdownMenuItem(
+                              value: name,
+                              child: Text(
+                                name,
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        if (value == null) {
+                          return;
+                        }
+
+                        setDialogState(() {
+                          department = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final name = nameController.text.trim();
+                    final email = emailController.text.trim();
+                    final position = positionController.text.trim();
+
+                    if (name.isEmpty || email.isEmpty || position.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Name, email and position are required.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+
+                    Navigator.pop(dialogContext);
+
+                    setState(() {
+                      employees.insert(0, {
+                        'name': name,
+                        'email': email,
+                        'phone': 'Not provided',
+                        'position': position,
+                        'department': department,
+                        'status': 'Active',
+                        'joined': 'Added today (demo)',
+                        'events': '0',
+                      });
+
+                      selectedFilter = 'All';
+                    });
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          '$name added locally for this session only.',
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Add'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).whenComplete(() {
+      nameController.dispose();
+      emailController.dispose();
+      positionController.dispose();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.bg,
 
       appBar: AppBar(
         title: const Text('Employees'),
@@ -208,12 +322,12 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Team Members',
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.text,
+                          color: context.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -231,12 +345,12 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.light,
+                    color: context.tintSurface,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.groups_outlined,
-                    color: AppColors.primary,
+                    color: context.accent,
                     size: 28,
                   ),
                 ),
@@ -285,12 +399,9 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
               },
               decoration: InputDecoration(
                 hintText: 'Search name, email or position...',
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: Colors.grey,
-                ),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: context.card,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -319,12 +430,12 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
             // LIST TITLE
             Row(
               children: [
-                const Text(
+                Text(
                   'Employees',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -334,13 +445,13 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.light,
+                    color: context.tintSurface,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     filteredEmployees.length.toString(),
-                    style: const TextStyle(
-                      color: AppColors.dark,
+                    style: TextStyle(
+                      color: context.accentStrong,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
@@ -365,44 +476,27 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
     );
   }
 
-  Widget _buildSummaryCard(
-    IconData icon,
-    String title,
-    String value,
-  ) {
+  Widget _buildSummaryCard(IconData icon, String title, String value) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 14,
-        horizontal: 8,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: AppColors.primary,
-            size: 22,
-          ),
+          Icon(icon, color: context.accent, size: 22),
           const SizedBox(height: 5),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.text,
+              color: context.textPrimary,
             ),
           ),
           const SizedBox(height: 2),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 10,
-              color: Colors.grey,
-            ),
-          ),
+          Text(title, style: const TextStyle(fontSize: 10, color: Colors.grey)),
         ],
       ),
     );
@@ -419,29 +513,23 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
           selectedFilter = filter;
         });
       },
-      selectedColor: AppColors.primary,
-      backgroundColor: Colors.white,
+      selectedColor: context.accent,
+      backgroundColor: context.card,
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : AppColors.text,
+        color: isSelected ? Colors.white : context.textPrimary,
         fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
       side: BorderSide(
-        color: isSelected
-            ? AppColors.primary
-            : Colors.grey.shade300,
+        color: isSelected ? AppColors.primary : context.outlineStrong,
       ),
     );
   }
 
-  Widget _buildEmployeeCard(
-    Map<String, String> employee,
-  ) {
+  Widget _buildEmployeeCard(Map<String, String> employee) {
     final isActive = employee['status'] == 'Active';
 
-    final initial = employee['name']!
-        .substring(0, 1)
-        .toUpperCase();
+    final initial = employee['name']!.substring(0, 1).toUpperCase();
 
     return InkWell(
       borderRadius: BorderRadius.circular(18),
@@ -453,11 +541,9 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.card,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: Colors.grey.shade100,
-          ),
+          border: Border.all(color: context.cardAlt),
         ),
         child: Column(
           children: [
@@ -468,14 +554,14 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: AppColors.light,
+                    color: context.tintSurface,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
                     child: Text(
                       initial,
-                      style: const TextStyle(
-                        color: AppColors.dark,
+                      style: TextStyle(
+                        color: context.accentStrong,
                         fontSize: 19,
                         fontWeight: FontWeight.bold,
                       ),
@@ -488,15 +574,14 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                 // NAME + POSITION
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         employee['name']!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.text,
+                          color: context.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -511,10 +596,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                   ),
                 ),
 
-                _buildStatusBadge(
-                  employee['status']!,
-                  isActive,
-                ),
+                _buildStatusBadge(employee['status']!, isActive),
               ],
             ),
 
@@ -526,19 +608,12 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
 
             Row(
               children: [
-                const Icon(
-                  Icons.email_outlined,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
+                Icon(Icons.email_outlined, size: 16, color: context.accent),
                 const SizedBox(width: 7),
                 Expanded(
                   child: Text(
                     employee['email']!,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -549,34 +624,20 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
 
             Row(
               children: [
-                const Icon(
-                  Icons.business_outlined,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
+                Icon(Icons.business_outlined, size: 16, color: context.accent),
                 const SizedBox(width: 7),
                 Text(
                   employee['department']!,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
 
                 const Spacer(),
 
-                const Icon(
-                  Icons.event_outlined,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
+                Icon(Icons.event_outlined, size: 16, color: context.accent),
                 const SizedBox(width: 5),
                 Text(
                   '${employee['events']} events',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -593,18 +654,15 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                 const SizedBox(width: 6),
                 Text(
                   'Joined ${employee['joined']}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
                 ),
 
                 const Spacer(),
 
-                const Text(
+                Text(
                   'View Details →',
                   style: TextStyle(
-                    color: AppColors.primary,
+                    color: context.accent,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -617,40 +675,26 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
     );
   }
 
-  Widget _buildStatusBadge(
-    String status,
-    bool isActive,
-  ) {
+  Widget _buildStatusBadge(String status, bool isActive) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 9,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(
-        color: isActive
-            ? AppColors.light
-            : Colors.grey.shade100,
+        color: isActive ? context.tintSurface : context.cardAlt,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            isActive
-                ? Icons.check_circle_outline
-                : Icons.pause_circle_outline,
+            isActive ? Icons.check_circle_outline : Icons.pause_circle_outline,
             size: 13,
-            color: isActive
-                ? AppColors.dark
-                : Colors.grey.shade700,
+            color: isActive ? context.accentStrong : context.textMuted,
           ),
           const SizedBox(width: 4),
           Text(
             status,
             style: TextStyle(
-              color: isActive
-                  ? AppColors.dark
-                  : Colors.grey.shade700,
+              color: isActive ? context.accentStrong : context.textMuted,
               fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
@@ -663,37 +707,27 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
   Widget _buildEmptyState() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        vertical: 50,
-        horizontal: 20,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.card,
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Icon(
-            Icons.person_search_outlined,
-            size: 55,
-            color: Colors.grey,
-          ),
+          Icon(Icons.person_search_outlined, size: 55, color: Colors.grey),
           SizedBox(height: 12),
           Text(
             'No employees found',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppColors.text,
+              color: context.textPrimary,
             ),
           ),
           SizedBox(height: 5),
           Text(
             'Try another search or filter.',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: Colors.grey, fontSize: 13),
           ),
         ],
       ),

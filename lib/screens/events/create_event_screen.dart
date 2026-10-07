@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_x.dart';
 
 class CreateEventScreen extends StatefulWidget {
   const CreateEventScreen({super.key});
@@ -170,7 +172,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.light,
+      backgroundColor: context.tintSurface,
 
       appBar: AppBar(
         backgroundColor: AppColors.primary,
@@ -178,8 +180,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         title: const Text('Create Event'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.notifications);
+            },
             icon: const Icon(Icons.notifications_none),
+            tooltip: 'Notifications',
           ),
         ],
       ),
@@ -198,7 +203,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.card,
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Row(
@@ -207,12 +212,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Let’s Create Something Amazing',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.text,
+                              color: context.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -221,7 +226,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             'your event.',
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.grey.shade600,
+                              color: context.textFaint,
                             ),
                           ),
                         ],
@@ -233,13 +238,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     Container(
                       width: 58,
                       height: 58,
-                      decoration: const BoxDecoration(
-                        color: AppColors.light,
+                      decoration: BoxDecoration(
+                        color: context.tintSurface,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.event_available,
-                        color: AppColors.primary,
+                        color: context.accent,
                         size: 30,
                       ),
                     ),
@@ -254,7 +259,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 width: double.infinity,
                 height: 170,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.card,
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: InkWell(
@@ -269,17 +274,17 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   child: Container(
                     margin: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: AppColors.light,
+                      color: context.tintSurface,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: AppColors.primary, width: 1.2),
                     ),
-                    child: const Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.add_photo_alternate_outlined,
                           size: 42,
-                          color: AppColors.primary,
+                          color: context.accent,
                         ),
                         SizedBox(height: 10),
                         Text(
@@ -287,7 +292,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.text,
+                            color: context.textPrimary,
                           ),
                         ),
                         SizedBox(height: 5),
@@ -344,7 +349,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       fontSize: 15,
                       color: selectedDate == null
                           ? Colors.grey
-                          : AppColors.text,
+                          : context.textPrimary,
                     ),
                   ),
                 ),
@@ -377,7 +382,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 fontSize: 14,
                                 color: startTime == null
                                     ? Colors.grey
-                                    : AppColors.text,
+                                    : context.textPrimary,
                               ),
                             ),
                           ),
@@ -410,7 +415,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 fontSize: 14,
                                 color: endTime == null
                                     ? Colors.grey
-                                    : AppColors.text,
+                                    : context.textPrimary,
                               ),
                             ),
                           ),
@@ -507,7 +512,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         Navigator.pop(context);
                       },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
+                        foregroundColor: context.accent,
                         side: const BorderSide(color: AppColors.primary),
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
@@ -543,10 +548,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     return RichText(
       text: TextSpan(
         text: text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: AppColors.text,
+          color: context.textPrimary,
         ),
         children: [
           if (required)
@@ -565,16 +570,16 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   }) {
     return InputDecoration(
       hintText: hintText,
-      prefixIcon: Icon(icon, color: AppColors.primary),
+      prefixIcon: Icon(icon, color: context.accent),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: context.card,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade200),
+        borderSide: BorderSide(color: context.outline),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
