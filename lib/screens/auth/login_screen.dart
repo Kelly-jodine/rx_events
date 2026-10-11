@@ -133,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
-                      // Forgot Password will be added later.
+                      Navigator.pushNamed(context, AppRoutes.forgotPassword);
                     },
                     child: const Text('Forgot Password?'),
                   ),

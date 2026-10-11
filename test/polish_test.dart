@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:rx_events/core/data/demo_events.dart';
 import 'package:rx_events/core/routes/app_routes.dart';
 import 'package:rx_events/core/theme/app_theme.dart';
 import 'package:rx_events/core/theme/theme_controller.dart';
 import 'package:rx_events/screens/Bookings/bookings_screen.dart';
 import 'package:rx_events/screens/attendees/attendees_screen.dart';
 import 'package:rx_events/screens/attendees/attendee_details.dart';
+import 'package:rx_events/screens/auth/forgot_password_screen.dart';
+import 'package:rx_events/screens/auth/login_screen.dart';
 import 'package:rx_events/screens/calendar/calendar_screen.dart';
 import 'package:rx_events/screens/dashboard/dashboard_screen.dart';
 import 'package:rx_events/screens/employees/employee_details.dart';
@@ -217,6 +220,209 @@ void main() {
       });
 
       expect(whiteSurfaces, findsWidgets);
+    });
+  });
+
+  group('Event details data flow', () {
+    Finder assetImage(String assetName) => find.byWidgetPredicate(
+      (widget) =>
+          widget is Image &&
+          widget.image is AssetImage &&
+          (widget.image as AssetImage).assetName == assetName,
+    );
+
+    testWidgets('shows the event data passed through the route', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          routes: {AppRoutes.eventDetails: (_) => const EventDetailsScreen()},
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.eventDetails,
+                    arguments: DemoEvents.byTitle('Annual Business Meetup'),
+                  ),
+                  child: const Text('OPEN_EVENT'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('OPEN_EVENT'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Annual Business Meetup'), findsWidgets);
+      expect(find.textContaining('full-day meetup'), findsWidgets);
+      expect(assetImage('assets/images/business_event.jpg'), findsWidgets);
+      expect(find.text('120 Registered'), findsWidgets);
+    });
+
+    testWidgets('feature chips open local demo information', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          routes: {AppRoutes.eventDetails: (_) => const EventDetailsScreen()},
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.eventDetails,
+                    arguments: DemoEvents.byTitle('Tech Conference 2026'),
+                  ),
+                  child: const Text('OPEN_EVENT'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('OPEN_EVENT'));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Networking'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Networking'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Networking Session'), findsOneWidget);
+      expect(find.textContaining('Tech Conference 2026'), findsWidgets);
+
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Networking Session'), findsNothing);
+    });
+
+    testWidgets('a dashboard event opens its own details with its image', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          routes: {AppRoutes.eventDetails: (_) => const EventDetailsScreen()},
+          home: const DashboardScreen(),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Annual Business Meetup'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Annual Business Meetup'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Annual Business Meetup'), findsWidgets);
+      expect(assetImage('assets/images/business_event.jpg'), findsWidgets);
+      expect(find.textContaining('founders, managers'), findsWidgets);
+    });
+
+    testWidgets('a top performing report event opens that same event', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          routes: {AppRoutes.eventDetails: (_) => const EventDetailsScreen()},
+          home: const ReportsScreen(),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Music Festival'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Music Festival'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Music Festival'), findsWidgets);
+      expect(assetImage('assets/images/music_festival.jpg'), findsWidgets);
+      expect(find.text('Draft'), findsWidgets);
+    });
+  });
+
+  group('Login forgot password', () {
+    testWidgets('validates the email and shows a demo confirmation', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          routes: {
+            AppRoutes.forgotPassword: (_) => const ForgotPasswordScreen(),
+          },
+          home: const LoginScreen(),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Forgot Password?'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ForgotPasswordScreen), findsOneWidget);
+
+      await tester.tap(find.text('Send Reset Link'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter your email'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextFormField), 'not-an-email');
+      await tester.tap(find.text('Send Reset Link'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter a valid email'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextFormField), 'hilda@rxevents.com');
+      await tester.tap(find.text('Send Reset Link'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          'Demo mode: password reset instructions would be sent to this email.',
+        ),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('Settings terms', () {
+    testWidgets('the terms tile opens the local terms view', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(theme: AppTheme.lightTheme, home: const SettingsScreen()),
+      );
+
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Terms & Conditions'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Terms & Conditions'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Use of the platform'), findsOneWidget);
+      expect(find.text('Event management responsibilities'), findsOneWidget);
+      expect(find.text('Booking information'), findsOneWidget);
+      expect(find.text('Payments'), findsOneWidget);
+      expect(find.text('Account security'), findsOneWidget);
+      expect(find.text('Updates to these terms'), findsOneWidget);
+
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Use of the platform'), findsNothing);
     });
   });
 }

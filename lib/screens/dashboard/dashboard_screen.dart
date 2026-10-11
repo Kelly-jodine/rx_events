@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/data/demo_events.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_x.dart';
@@ -322,7 +323,7 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.events);
+                    _showQuickActionsSheet(context);
                   },
                   child: const Text('See all →'),
                 ),
@@ -458,28 +459,19 @@ class DashboardScreen extends StatelessWidget {
 
             _buildRecentEvent(
               context,
-              title: 'Annual Business Meetup',
-              date: '20 September 2026',
-              location: 'Rajkot',
+              DemoEvents.byTitle('Annual Business Meetup'),
             ),
 
             const SizedBox(height: 10),
 
             _buildRecentEvent(
               context,
-              title: 'Tech Conference',
-              date: '28 September 2026',
-              location: 'Ahmedabad',
+              DemoEvents.byTitle('Tech Conference 2026'),
             ),
 
             const SizedBox(height: 10),
 
-            _buildRecentEvent(
-              context,
-              title: 'Music Festival',
-              date: '5 October 2026',
-              location: 'Surat',
-            ),
+            _buildRecentEvent(context, DemoEvents.byTitle('Music Festival')),
           ],
         ),
       ),
@@ -493,16 +485,7 @@ class DashboardScreen extends StatelessWidget {
         Navigator.pushNamed(
           context,
           AppRoutes.eventDetails,
-          arguments: <String, String>{
-            'title': 'Tech Conference 2026',
-            'date': '28 September 2026',
-            'location': 'Ahmedabad',
-            'status': 'Upcoming',
-            'image': 'assets/images/tech_event.jpg',
-            'description':
-                'Annual technology conference bringing together '
-                'startups, developers and innovators.',
-          },
+          arguments: DemoEvents.byTitle('Tech Conference 2026'),
         );
       },
       child: Container(
@@ -708,12 +691,11 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentEvent(
-    BuildContext context, {
-    required String title,
-    required String date,
-    required String location,
-  }) {
+  Widget _buildRecentEvent(BuildContext context, Map<String, String> event) {
+    final title = event['title'] ?? '';
+    final date = event['date'] ?? '';
+    final location = event['location'] ?? '';
+
     return Card(
       elevation: 1,
       margin: EdgeInsets.zero,
@@ -722,12 +704,7 @@ class DashboardScreen extends StatelessWidget {
           Navigator.pushNamed(
             context,
             AppRoutes.eventDetails,
-            arguments: <String, String>{
-              'title': title,
-              'date': date,
-              'location': location,
-              'status': 'Upcoming',
-            },
+            arguments: event,
           );
         },
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
@@ -745,6 +722,132 @@ class DashboardScreen extends StatelessWidget {
         subtitle: Text('$date • $location'),
         trailing: const Icon(Icons.arrow_forward_ios, size: 15),
       ),
+    );
+  }
+
+  void _showQuickActionsSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Quick Actions',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: sheetContext.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Jump straight to a module',
+                  style: TextStyle(fontSize: 12, color: sheetContext.textFaint),
+                ),
+                const SizedBox(height: 12),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      _buildQuickActionTile(
+                        sheetContext,
+                        icon: Icons.add_circle_outline,
+                        title: 'Create Event',
+                        subtitle: 'Set up a new event',
+                        route: AppRoutes.createEvent,
+                      ),
+                      _buildQuickActionTile(
+                        sheetContext,
+                        icon: Icons.calendar_month_outlined,
+                        title: 'Calendar',
+                        subtitle: 'See your event schedule',
+                        route: AppRoutes.calendar,
+                      ),
+                      _buildQuickActionTile(
+                        sheetContext,
+                        icon: Icons.people_outline,
+                        title: 'Staff',
+                        subtitle: 'Manage employees',
+                        route: AppRoutes.employees,
+                      ),
+                      _buildQuickActionTile(
+                        sheetContext,
+                        icon: Icons.bar_chart_outlined,
+                        title: 'Reports',
+                        subtitle: 'Revenue and top events',
+                        route: AppRoutes.reports,
+                      ),
+                      _buildQuickActionTile(
+                        sheetContext,
+                        icon: Icons.book_online_outlined,
+                        title: 'Bookings',
+                        subtitle: 'Review bookings',
+                        route: AppRoutes.bookings,
+                      ),
+                      _buildQuickActionTile(
+                        sheetContext,
+                        icon: Icons.event_available_outlined,
+                        title: 'Attendees',
+                        subtitle: 'View registered guests',
+                        route: AppRoutes.attendees,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildQuickActionTile(
+    BuildContext sheetContext, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String route,
+  }) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: sheetContext.tintSurface,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: sheetContext.accentStrong, size: 20),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: sheetContext.textPrimary,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(fontSize: 11, color: sheetContext.textFaint),
+      ),
+      trailing: const Icon(Icons.chevron_right, size: 18),
+      onTap: () {
+        final navigator = Navigator.of(sheetContext);
+
+        navigator.pop();
+
+        navigator.pushNamed(route);
+      },
     );
   }
 

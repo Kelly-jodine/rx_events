@@ -6,6 +6,7 @@ import 'screens/auth/splash_screen.dart';
 import 'screens/auth/onboarding_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
+import 'screens/auth/forgot_password_screen.dart';
 import 'screens/dashboard/dashboard_screen.dart';
 import 'screens/events/events_screen.dart';
 import 'screens/events/event_details_screen.dart';
@@ -56,6 +57,7 @@ class RxEventsApp extends StatelessWidget {
             AppRoutes.onboarding: (context) => const OnboardingScreen(),
             AppRoutes.login: (context) => const LoginScreen(),
             AppRoutes.register: (context) => const RegisterScreen(),
+            AppRoutes.forgotPassword: (context) => const ForgotPasswordScreen(),
             AppRoutes.dashboard: (context) => const DashboardScreen(),
             AppRoutes.events: (context) => const EventsScreen(),
             AppRoutes.eventDetails: (context) => const EventDetailsScreen(),

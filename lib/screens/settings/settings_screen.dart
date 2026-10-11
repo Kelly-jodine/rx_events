@@ -679,15 +679,89 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // TERMS & CONDITIONS
   // ============================================================
 
+  // Local/demo terms content. Nothing here is legally binding and no
+  // backend is involved.
+  static const List<Map<String, String>> _termsSections = [
+    {
+      'heading': 'Use of the platform',
+      'body':
+          'Rx Events may be used to create, manage and promote demo events. '
+          'Keep the information you enter accurate and use the app only for '
+          'lawful purposes.',
+    },
+    {
+      'heading': 'Event management responsibilities',
+      'body':
+          'Organizers are responsible for their event details, schedules, '
+          'venue rules and attendee communication. Event content shown in '
+          'this build is local demo data.',
+    },
+    {
+      'heading': 'Booking information',
+      'body':
+          'Bookings recorded in the app confirm a place at an event only '
+          'within this demo. Capacity, dates and status are shown as entered '
+          'by the organizer.',
+    },
+    {
+      'heading': 'Payments',
+      'body':
+          'Payment entries are illustrative demo records. No real money is '
+          'charged and no payment provider is connected in this build.',
+    },
+    {
+      'heading': 'Account security',
+      'body':
+          'Keep your login details private. You are responsible for activity '
+          'performed through your account in this demo session.',
+    },
+    {
+      'heading': 'Updates to these terms',
+      'body':
+          'These demo terms may be updated as the app changes. The latest '
+          'version is always the one shown here in Settings.',
+    },
+  ];
+
   void _showTermsDialog() {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
           title: const Text('Terms & Conditions'),
-          content: const Text(
-            'These terms and conditions will contain '
-            'the rules and policies for using Rx Events.',
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final section in _termsSections) ...[
+                    Text(
+                      section['heading'] ?? '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      section['body'] ?? '',
+                      style: const TextStyle(fontSize: 12, height: 1.5),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  Text(
+                    'Demo content - not legal advice.',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontStyle: FontStyle.italic,
+                      color: dialogContext.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           actions: [
             TextButton(

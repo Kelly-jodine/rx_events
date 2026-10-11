@@ -430,15 +430,22 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   _buildFeature(
                     icon: Icons.people_outline,
                     title: 'Networking',
+                    onTap: () => _showFeatureInfo('Networking'),
                   ),
-                  _buildFeature(icon: Icons.mic_none, title: 'Speakers'),
+                  _buildFeature(
+                    icon: Icons.mic_none,
+                    title: 'Speakers',
+                    onTap: () => _showFeatureInfo('Speakers'),
+                  ),
                   _buildFeature(
                     icon: Icons.co_present_outlined,
                     title: 'Workshops',
+                    onTap: () => _showFeatureInfo('Workshops'),
                   ),
                   _buildFeature(
                     icon: Icons.workspace_premium_outlined,
                     title: 'Certificate',
+                    onTap: () => _showFeatureInfo('Certificate'),
                   ),
                 ],
               ),
@@ -629,28 +636,216 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     );
   }
 
-  Widget _buildFeature({required IconData icon, required String title}) {
-    return Column(
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: context.tintSurface,
-            shape: BoxShape.circle,
+  Widget _buildFeature({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Column(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: context.tintSurface,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: context.accent, size: 24),
+              ),
+              const SizedBox(height: 7),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  color: context.textPrimary,
+                ),
+              ),
+            ],
           ),
-          child: Icon(icon, color: context.accent, size: 24),
         ),
-        const SizedBox(height: 7),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-            color: context.textPrimary,
+      ),
+    );
+  }
+
+  /// Shows local/demo information for the tapped feature chip.
+  ///
+  /// There are no dedicated Networking / Speakers / Workshop / Certificate
+  /// screens, so a small bottom sheet presents short demo details related to
+  /// the event currently open. Nothing here is connected to a backend.
+  void _showFeatureInfo(String feature) {
+    final event = _currentEvent();
+
+    final eventTitle = _readText(
+      event,
+      'title',
+      fallback: _readText(event, 'name', fallback: 'this event'),
+    );
+
+    final location = _readText(
+      event,
+      'location',
+      fallback: _readText(event, 'venue', fallback: 'the event venue'),
+    );
+
+    final dateLabel = _readText(
+      event,
+      'date',
+      fallback: 'date to be announced',
+    );
+
+    final time = _readTimeRange(event);
+
+    final timeLabel = time.isEmpty ? 'time to be announced' : time;
+
+    final String heading;
+
+    final List<String> lines;
+
+    switch (feature) {
+      case 'Networking':
+        heading = 'Networking Session';
+        lines = [
+          'Networking breaks run throughout $eventTitle.',
+          'When: $dateLabel • $timeLabel',
+          'Where: Networking Lounge, $location',
+          'Meet attendees, speakers and partner teams in an informal setting.',
+        ];
+        break;
+
+      case 'Speakers':
+        heading = 'Speakers';
+        lines = [
+          'Dr. Meera Shah - Keynote, industry trends',
+          'Rahul Verma - Product & design lead',
+          'Anita Rao - Host and panel moderator',
+          'Speaker line-up for $eventTitle (demo list).',
+        ];
+        break;
+
+      case 'Workshops':
+        heading = 'Workshop';
+        lines = [
+          'Hands-on session: Plan, build and run a smoother event.',
+          'When: $dateLabel • $timeLabel',
+          'Where: Workshop Room, $location',
+          'Small groups, practical exercises and a short Q&A to close.',
+        ];
+        break;
+
+      default:
+        heading = 'Certificate';
+        lines = [
+          'Certificates are issued to attendees who complete $eventTitle.',
+          'Requirement: check in at the venue and attend the full programme.',
+          'Delivery: a demo digital certificate is shared after the event.',
+          'Demo note: certificates are not sent by any real service yet.',
+        ];
+    }
+
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: sheetContext.tintSurface,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        feature == 'Speakers'
+                            ? Icons.mic_none
+                            : feature == 'Certificate'
+                            ? Icons.workspace_premium_outlined
+                            : feature == 'Workshops'
+                            ? Icons.co_present_outlined
+                            : Icons.people_outline,
+                        color: sheetContext.accent,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        heading,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: sheetContext.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                for (final line in lines)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Icon(
+                            Icons.circle,
+                            size: 5,
+                            color: sheetContext.accent,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            line,
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.4,
+                              color: sheetContext.textMuted,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(sheetContext);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                    ),
+                    child: const Text('Close'),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/data/demo_events.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_x.dart';
@@ -15,34 +16,7 @@ class _EventsScreenState extends State<EventsScreen> {
   String selectedFilter = 'All';
 
   final List<Map<String, String>> events = [
-    {
-      'title': 'Annual Business Meetup',
-      'date': '20 September 2026',
-      'location': 'Rajkot',
-      'status': 'Upcoming',
-      'image': 'assets/images/business_event.jpg',
-    },
-    {
-      'title': 'Tech Conference 2026',
-      'date': '28 September 2026',
-      'location': 'Ahmedabad',
-      'status': 'Upcoming',
-      'image': 'assets/images/tech_event.jpg',
-    },
-    {
-      'title': 'Corporate Event',
-      'date': '12 October 2026',
-      'location': 'Rajkot',
-      'status': 'Upcoming',
-      'image': 'assets/images/corporate_event.jpg',
-    },
-    {
-      'title': 'Music Festival',
-      'date': '5 October 2026',
-      'location': 'Surat',
-      'status': 'Draft',
-      'image': 'assets/images/music_festival.jpg',
-    },
+    for (final event in DemoEvents.all) {...event},
   ];
 
   List<Map<String, String>> get filteredEvents {

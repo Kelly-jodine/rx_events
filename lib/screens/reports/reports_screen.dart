@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/data/demo_events.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_x.dart';
@@ -382,34 +383,22 @@ class _ReportsScreenState extends State<ReportsScreen> {
             const SizedBox(height: 12),
 
             _buildTopEvent(
-              imageUrl:
-                  'https://images.unsplash.com/photo-1492684223066-81342ee5ff30'
-                  '?auto=format&fit=crop&w=400&q=80',
-              title: 'Annual Tech Expo 2026',
-              date: '28th Aug, 2026',
+              event: DemoEvents.byTitle('Annual Business Meetup'),
+              revenue: '₹1,500',
+            ),
+
+            const SizedBox(height: 10),
+
+            _buildTopEvent(
+              event: DemoEvents.byTitle('Tech Conference 2026'),
               revenue: '₹2,000',
             ),
 
             const SizedBox(height: 10),
 
             _buildTopEvent(
-              imageUrl:
-                  'https://images.unsplash.com/photo-1506157786151-b8491531f063'
-                  '?auto=format&fit=crop&w=400&q=80',
-              title: 'Summer Music Festival',
-              date: '5th Oct, 2026',
+              event: DemoEvents.byTitle('Music Festival'),
               revenue: '₹2,500',
-            ),
-
-            const SizedBox(height: 10),
-
-            _buildTopEvent(
-              imageUrl:
-                  'https://images.unsplash.com/photo-1511578314322-379afb476865'
-                  '?auto=format&fit=crop&w=400&q=80',
-              title: 'Annual Business Meetup',
-              date: '20th Sep, 2026',
-              revenue: '₹1,500',
             ),
           ],
         ),
@@ -611,15 +600,17 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Widget _buildTopEvent({
-    required String imageUrl,
-    required String title,
-    required String date,
+    required Map<String, String> event,
     required String revenue,
   }) {
+    final title = event['title'] ?? '';
+    final date = event['date'] ?? '';
+    final image = event['image'] ?? '';
+
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: () {
-        Navigator.pushNamed(context, AppRoutes.events);
+        Navigator.pushNamed(context, AppRoutes.eventDetails, arguments: event);
       },
       child: Container(
         padding: const EdgeInsets.all(10),
@@ -638,20 +629,27 @@ class _ReportsScreenState extends State<ReportsScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                imageUrl,
-                width: 58,
-                height: 58,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 58,
-                    height: 58,
-                    color: context.tintSurface,
-                    child: Icon(Icons.event, color: context.accent),
-                  );
-                },
-              ),
+              child: image.isEmpty
+                  ? Container(
+                      width: 58,
+                      height: 58,
+                      color: context.tintSurface,
+                      child: Icon(Icons.event, color: context.accent),
+                    )
+                  : Image.asset(
+                      image,
+                      width: 58,
+                      height: 58,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 58,
+                          height: 58,
+                          color: context.tintSurface,
+                          child: Icon(Icons.event, color: context.accent),
+                        );
+                      },
+                    ),
             ),
             const SizedBox(width: 12),
             Expanded(
