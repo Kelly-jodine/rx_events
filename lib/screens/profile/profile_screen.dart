@@ -32,7 +32,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isDark = ThemeController.isDarkMode.value;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile'), centerTitle: true),
+
+         appBar: AppBar(title: const Text('Profile'), centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
         child: Column(
