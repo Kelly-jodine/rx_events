@@ -186,10 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // PROFILE CARD
-  // ============================================================
-
+ 
   Widget _buildProfileCard() {
     return InkWell(
       borderRadius: BorderRadius.circular(14),
@@ -254,9 +251,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // SECTION TITLE
-  // ============================================================
+ 
 
   Widget _buildSectionTitle(String title) {
     return Padding(
@@ -268,9 +263,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // SETTINGS CARD
-  // ============================================================
+
 
   Widget _buildSettingsCard({required List<Widget> children}) {
     return Container(
@@ -283,9 +276,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // SETTINGS TILE
-  // ============================================================
+
 
   Widget _buildSettingsTile({
     required IconData icon,
@@ -313,7 +304,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             const SizedBox(width: 9),
 
-            Expanded(
+
+              Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -347,10 +339,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // DIVIDER
-  // ============================================================
-
+ 
   Widget _buildDivider() {
     return Divider(
       height: 1,
@@ -361,10 +350,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // LOGOUT BUTTON
-  // ============================================================
-
+ 
   Widget _buildLogoutButton() {
     return SizedBox(
       width: double.infinity,
@@ -395,9 +381,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // BOTTOM NAVIGATION
-  // ============================================================
 
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
@@ -448,9 +431,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // LANGUAGE DIALOG
-  // ============================================================
+  
 
   void _showLanguageDialog() {
     showDialog(
@@ -498,9 +479,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // CHOICE TILE
-  // ============================================================
+ 
 
   Widget _buildChoiceTile({
     required String title,
@@ -516,10 +495,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
-
-  // ============================================================
-  // THEME DIALOG
-  // ============================================================
 
   void _showThemeDialog() {
     final isDark = ThemeController.isDarkMode.value;
@@ -563,17 +538,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // CHANGE PASSWORD
-  // ============================================================
+
 
   void _showChangePasswordDialog() {
     final currentPasswordController = TextEditingController();
     final newPasswordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
 
-    // The dialog creates these controllers, so it must also dispose
-    // them to avoid leaking on every open.
+
     showDialog(
       context: context,
       builder: (dialogContext) {
@@ -675,12 +647,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  // ============================================================
-  // TERMS & CONDITIONS
-  // ============================================================
-
-  // Local/demo terms content. Nothing here is legally binding and no
-  // backend is involved.
+  
   static const List<Map<String, String>> _termsSections = [
     {
       'heading': 'Use of the platform',
@@ -776,9 +743,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // ABOUT
-  // ============================================================
 
   void _showAboutDialog() {
     showAboutDialog(
@@ -796,11 +760,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // PRIVACY & SECURITY (local demo preferences)
-  // ============================================================
 
-  // Kept in memory for this session only. Nothing is stored remotely.
   bool _twoFactorEnabled = false;
   bool _hideEmailFromAttendees = true;
   bool _bookingActivityAlerts = true;
@@ -892,9 +852,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // HELP & SUPPORT (local demo content)
-  // ============================================================
+
 
   void _showHelpDialog() {
     showDialog<void>(
@@ -958,9 +916,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // LOGOUT DIALOG
-  // ============================================================
 
   void _showLogoutDialog() {
     showDialog(
